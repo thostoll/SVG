@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Drawing;
+using Svg.Rendering;
 
-namespace Svg
+namespace Svg.Painting
 {
     /// <summary>
     /// A wrapper for a paint server which isn't defined currently in the parse process, but
@@ -45,7 +43,7 @@ namespace Svg
             }
         }
 
-        public override Brush GetBrush(SvgVisualElement styleOwner, ISvgRenderer renderer, float opacity, bool forStroke = false)
+        public override Brush GetBrush(Basic_Shapes.SvgVisualElement styleOwner, ISvgRenderer renderer, float opacity, bool forStroke = false)
         {
             EnsureServer(styleOwner);
             return _concreteServer.GetBrush(styleOwner, renderer, opacity, forStroke);

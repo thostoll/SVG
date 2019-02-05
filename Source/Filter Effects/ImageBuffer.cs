@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using Svg.Rendering;
 
-namespace Svg.FilterEffects
+namespace Svg.Filter_Effects
 {
     public class ImageBuffer : IDictionary<string, Bitmap>
     {

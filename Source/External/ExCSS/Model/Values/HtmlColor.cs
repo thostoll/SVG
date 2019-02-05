@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using Svg.ExCSS.Model;
-using Svg.ExCSS.Model.Extensions;
+using Svg.External.ExCSS.Model;
+using Svg.External.ExCSS.Model.Extensions;
+using Svg.External.ExCSS.Model.Values;
 
 // ReSharper disable once CheckNamespace
 namespace Svg.ExCSS

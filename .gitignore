@@ -16,3 +16,5 @@ Tests/**/*.suo
 *.trx
 Source/TestResults/
 Source/.vs
+
+*.user

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using Svg.ExCSS;
+using Svg.ExCSS.Model;
 
-namespace Svg.ExCSS.Model.TextBlocks
+namespace Svg.External.ExCSS.Model.TextBlocks
 {
     internal class RangeBlock : Block
     {

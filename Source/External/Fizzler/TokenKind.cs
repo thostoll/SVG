@@ -19,7 +19,7 @@
 // 
 #endregion
 
-namespace Fizzler
+namespace Svg.External.Fizzler
 {
     /// <summary>
     /// Represents the classification of a token.

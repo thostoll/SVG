@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace Svg
+namespace Svg.Painting
 {
     public interface ISvgBoundable
     {

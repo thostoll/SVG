@@ -1,6 +1,7 @@
 ﻿
 // ReSharper disable once CheckNamespace
-namespace Svg.ExCSS
+
+namespace Svg.External.ExCSS.Model.Values
 {
     public abstract class Term
     {

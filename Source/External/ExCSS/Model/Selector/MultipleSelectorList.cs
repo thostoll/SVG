@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Svg.External.ExCSS;
 
 // ReSharper disable once CheckNamespace
 namespace Svg.ExCSS

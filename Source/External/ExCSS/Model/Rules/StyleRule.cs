@@ -1,6 +1,6 @@
 ﻿using System;
 using Svg.ExCSS.Model;
-using Svg.ExCSS.Model.Extensions;
+using Svg.External.ExCSS.Model.Extensions;
 
 // ReSharper disable once CheckNamespace
 namespace Svg.ExCSS
@@ -35,7 +35,7 @@ namespace Svg.ExCSS
             get { return _value; }
             set
             {
-                _selector = Parser.ParseSelector(value);
+                _selector = External.ExCSS.Parser.ParseSelector(value);
                 _value = value;
             }
         }

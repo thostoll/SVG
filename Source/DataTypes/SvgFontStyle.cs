@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
+using Svg.Painting;
 
-namespace Svg
+namespace Svg.DataTypes
 {
     /// <summary>This is the descriptor for the style of a font and takes the same values as the 'font-style' property, except that a comma-separated list is permitted.</summary>
     [TypeConverter(typeof(SvgFontStyleConverter))]

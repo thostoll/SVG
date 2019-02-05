@@ -1,11 +1,17 @@
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Diagnostics;
 using System.Linq;
+using Svg.Clipping_and_Masking;
+using Svg.DataTypes;
+using Svg.Filter_Effects;
+using Svg.Painting;
+using Svg.Rendering;
 
-namespace Svg
+namespace Svg.Basic_Shapes
 {
+    /// <inheritdoc cref="SvgElement" />
     /// <summary>
     /// The class that all SVG elements should derive from when they are to be rendered.
     /// </summary>
@@ -19,21 +25,9 @@ namespace Svg
         /// </summary>
         public abstract GraphicsPath Path(ISvgRenderer renderer);
 
-        PointF ISvgBoundable.Location
-        {
-            get
-            {
-                return Bounds.Location;
-            }
-        }
+        PointF ISvgBoundable.Location => Bounds.Location;
 
-        SizeF ISvgBoundable.Size
-        {
-            get
-            {
-                return Bounds.Size;
-            }
-        }
+        SizeF ISvgBoundable.Size => Bounds.Size;
 
         /// <summary>
         /// Gets the bounds of the element.
@@ -47,8 +41,8 @@ namespace Svg
         [SvgAttribute("clip")]
         public virtual string Clip
         {
-            get { return this.Attributes.GetInheritedAttribute<string>("clip"); }
-            set { this.Attributes["clip"] = value; }
+            get => Attributes.GetInheritedAttribute<string>("clip");
+            set => Attributes["clip"] = value;
         }
 
         /// <summary>
@@ -57,8 +51,8 @@ namespace Svg
         [SvgAttribute("clip-path")]
         public virtual Uri ClipPath
         {
-            get { return this.Attributes.GetAttribute<Uri>("clip-path"); }
-            set { this.Attributes["clip-path"] = value; }
+            get => Attributes.GetAttribute<Uri>("clip-path");
+            set => Attributes["clip-path"] = value;
         }
 
         /// <summary>
@@ -67,8 +61,8 @@ namespace Svg
         [SvgAttribute("clip-rule")]
         public SvgClipRule ClipRule
         {
-            get { return this.Attributes.GetAttribute<SvgClipRule>("clip-rule", SvgClipRule.NonZero); }
-            set { this.Attributes["clip-rule"] = value; }
+            get => Attributes.GetAttribute("clip-rule", SvgClipRule.NonZero);
+            set => Attributes["clip-rule"] = value;
         }
 
         /// <summary>
@@ -77,8 +71,8 @@ namespace Svg
         [SvgAttribute("filter")]
         public virtual Uri Filter
         {
-            get { return this.Attributes.GetInheritedAttribute<Uri>("filter"); }
-            set { this.Attributes["filter"] = value; }
+            get => Attributes.GetInheritedAttribute<Uri>("filter");
+            set => Attributes["filter"] = value;
         }
 
         /// <summary>
@@ -110,83 +104,79 @@ namespace Svg
             }
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Initializes a new instance of the <see cref="SvgVisualElement"/> class.
+        /// Initializes a new instance of the <see cref="T:Svg.Basic_Shapes.SvgVisualElement" /> class.
         /// </summary>
-        public SvgVisualElement()
-        {
-            this.IsPathDirty = true;
-        }
+        protected SvgVisualElement() => IsPathDirty = true;
 
-        protected virtual bool Renderable { get { return true; } }
+        protected virtual bool Renderable => true;
 
+        /// <inheritdoc />
         /// <summary>
-        /// Renders the <see cref="SvgElement"/> and contents to the specified <see cref="Graphics"/> object.
+        /// Renders the <see cref="T:Svg.SvgElement" /> and contents to the specified <see cref="T:System.Drawing.Graphics" /> object.
         /// </summary>
-        /// <param name="renderer">The <see cref="ISvgRenderer"/> object to render to.</param>
+        /// <param name="renderer">The <see cref="T:Svg.Rendering.ISvgRenderer" /> object to render to.</param>
         protected override void Render(ISvgRenderer renderer)
         {
-            this.Render(renderer, true);
+            Render(renderer, true);
         }
 
         private void Render(ISvgRenderer renderer, bool renderFilter)
         {
-            if (this.Visible && this.Displayable && this.PushTransforms(renderer) &&
-                (!Renderable || this.Path(renderer) != null))
+            if (!Visible || !Displayable || !PushTransforms(renderer) ||
+                (Renderable && Path(renderer) == null)) return;
+            bool renderNormal = true;
+
+            if (renderFilter && Filter != null)
             {
-                bool renderNormal = true;
-
-                if (renderFilter && this.Filter != null)
+                var filterPath = Filter;
+                if (filterPath.ToString().StartsWith("url("))
                 {
-                    var filterPath = this.Filter;
-                    if (filterPath.ToString().StartsWith("url("))
-                    {
-                        filterPath = new Uri(filterPath.ToString().Substring(4, filterPath.ToString().Length - 5), UriKind.RelativeOrAbsolute);
-                    }
-                    var filter = this.OwnerDocument.IdManager.GetElementById(filterPath) as FilterEffects.SvgFilter;
-                    if (filter != null)
-                    {
-                        this.PopTransforms(renderer);
-                        try
-                        {
-                            filter.ApplyFilter(this, renderer, (r) => this.Render(r, false));
-                        }
-                        catch (Exception ex) { Debug.Print(ex.ToString()); }
-                        renderNormal = false;
-                    }
+                    filterPath = new Uri(filterPath.ToString().Substring(4, filterPath.ToString().Length - 5), UriKind.RelativeOrAbsolute);
                 }
 
-
-                if (renderNormal)
+                if (OwnerDocument.IdManager.GetElementById(filterPath) is SvgFilter filter)
                 {
-                    this.SetClip(renderer);
-
-                    if (Renderable)
+                    PopTransforms(renderer);
+                    try
                     {
-                        // If this element needs smoothing enabled turn anti-aliasing on
-                        if (this.RequiresSmoothRendering)
-                        {
-                            renderer.SmoothingMode = SmoothingMode.AntiAlias;
-                        }
-
-                        this.RenderFill(renderer);
-                        this.RenderStroke(renderer);
-
-                        // Reset the smoothing mode
-                        if (this.RequiresSmoothRendering && renderer.SmoothingMode == SmoothingMode.AntiAlias)
-                        {
-                            renderer.SmoothingMode = SmoothingMode.Default;
-                        }
+                        filter.ApplyFilter(this, renderer, (r) => Render(r, false));
                     }
-                    else
+                    catch (Exception ex) { Debug.Print(ex.ToString()); }
+                    renderNormal = false;
+                }
+            }
+
+
+            if (renderNormal)
+            {
+                SetClip(renderer);
+
+                if (Renderable)
+                {
+                    // If this element needs smoothing enabled turn anti-aliasing on
+                    if (RequiresSmoothRendering)
                     {
-                        base.RenderChildren(renderer);
+                        renderer.SmoothingMode = SmoothingMode.AntiAlias;
                     }
 
-                    this.ResetClip(renderer);
-                    this.PopTransforms(renderer);
+                    RenderFill(renderer);
+                    RenderStroke(renderer);
+
+                    // Reset the smoothing mode
+                    if (RequiresSmoothRendering && renderer.SmoothingMode == SmoothingMode.AntiAlias)
+                    {
+                        renderer.SmoothingMode = SmoothingMode.Default;
+                    }
+                }
+                else
+                {
+                    base.RenderChildren(renderer);
                 }
 
+                ResetClip(renderer);
+                PopTransforms(renderer);
             }
         }
 
@@ -196,14 +186,14 @@ namespace Svg
         /// <param name="renderer">The <see cref="ISvgRenderer"/> object to render to.</param>
         protected internal virtual void RenderFill(ISvgRenderer renderer)
         {
-            if (this.Fill != null)
+            if (Fill != null)
             {
-                using (var brush = this.Fill.GetBrush(this, renderer, Math.Min(Math.Max(this.FillOpacity * this.Opacity, 0), 1)))
+                using (var brush = Fill.GetBrush(this, renderer, Math.Min(Math.Max(FillOpacity * Opacity, 0), 1)))
                 {
                     if (brush != null)
                     {
-                        this.Path(renderer).FillMode = this.FillRule == SvgFillRule.NonZero ? FillMode.Winding : FillMode.Alternate;
-                        renderer.FillPath(brush, this.Path(renderer));
+                        Path(renderer).FillMode = FillRule == SvgFillRule.NonZero ? FillMode.Winding : FillMode.Alternate;
+                        renderer.FillPath(brush, Path(renderer));
                     }
                 }
             }
@@ -215,19 +205,19 @@ namespace Svg
         /// <param name="renderer">The <see cref="ISvgRenderer"/> object to render to.</param>
         protected internal virtual bool RenderStroke(ISvgRenderer renderer)
         {
-            if (this.Stroke != null && this.Stroke != SvgColourServer.None && this.StrokeWidth > 0)
+            if (Stroke != null && Stroke != SvgPaintServer.None && StrokeWidth > 0)
             {
-                float strokeWidth = this.StrokeWidth.ToDeviceValue(renderer, UnitRenderingType.Other, this);
-                using (var brush = this.Stroke.GetBrush(this, renderer, Math.Min(Math.Max(this.StrokeOpacity * this.Opacity, 0), 1), true))
+                float strokeWidth = StrokeWidth.ToDeviceValue(renderer, UnitRenderingType.Other, this);
+                using (var brush = Stroke.GetBrush(this, renderer, Math.Min(Math.Max(StrokeOpacity * Opacity, 0), 1), true))
                 {
                     if (brush != null)
                     {
-                        var path = this.Path(renderer);
+                        var path = Path(renderer);
                         var bounds = path.GetBounds();
                         if (path.PointCount < 1) return false;
                         if (bounds.Width <= 0 && bounds.Height <= 0)
                         {
-                            switch (this.StrokeLineCap)
+                            switch (StrokeLineCap)
                             {
                                 case SvgStrokeLineCap.Round:
                                     using (var capPath = new GraphicsPath())
@@ -249,19 +239,19 @@ namespace Svg
                         {
                             using (var pen = new Pen(brush, strokeWidth))
                             {
-                                if (this.StrokeDashArray != null && this.StrokeDashArray.Count > 0)
+                                if (StrokeDashArray != null && StrokeDashArray.Count > 0)
                                 {
-                                    if (this.StrokeDashArray.Count % 2 != 0)
+                                    if (StrokeDashArray.Count % 2 != 0)
                                     {
                                         // handle odd dash arrays by repeating them once
-                                        this.StrokeDashArray.AddRange(this.StrokeDashArray);
+                                        StrokeDashArray.AddRange(StrokeDashArray);
                                     }
 
                                     /* divide by stroke width - GDI behaviour that I don't quite understand yet.*/
-                                    pen.DashPattern = this.StrokeDashArray.ConvertAll(u => ((u.ToDeviceValue(renderer, UnitRenderingType.Other, this) <= 0) ? 1 : u.ToDeviceValue(renderer, UnitRenderingType.Other, this)) /
+                                    pen.DashPattern = StrokeDashArray.ConvertAll(u => ((u.ToDeviceValue(renderer, UnitRenderingType.Other, this) <= 0) ? 1 : u.ToDeviceValue(renderer, UnitRenderingType.Other, this)) /
                                         ((strokeWidth <= 0) ? 1 : strokeWidth)).ToArray();
 
-                                    if (this.StrokeLineCap == SvgStrokeLineCap.Round)
+                                    if (StrokeLineCap == SvgStrokeLineCap.Round)
                                     {
                                         // to handle round caps, we have to adapt the dash pattern
                                         // by increasing the dash length by the stroke width - GDI draws the rounded 
@@ -277,13 +267,13 @@ namespace Svg
                                         pen.DashCap = DashCap.Round;
                                     }
 
-                                    if (this.StrokeDashOffset != null && this.StrokeDashOffset.Value != 0)
+                                    if (StrokeDashOffset != null && StrokeDashOffset.Value != 0)
                                     {
-                                        pen.DashOffset = ((this.StrokeDashOffset.ToDeviceValue(renderer, UnitRenderingType.Other, this) <= 0) ? 1 : this.StrokeDashOffset.ToDeviceValue(renderer, UnitRenderingType.Other, this)) /
+                                        pen.DashOffset = ((StrokeDashOffset.ToDeviceValue(renderer, UnitRenderingType.Other, this) <= 0) ? 1 : StrokeDashOffset.ToDeviceValue(renderer, UnitRenderingType.Other, this)) /
                                             ((strokeWidth <= 0) ? 1 : strokeWidth);
                                     }
                                 }
-                                switch (this.StrokeLineJoin)
+                                switch (StrokeLineJoin)
                                 {
                                     case SvgStrokeLineJoin.Bevel:
                                         pen.LineJoin = LineJoin.Bevel;
@@ -295,8 +285,8 @@ namespace Svg
                                         pen.LineJoin = LineJoin.Miter;
                                         break;
                                 }
-                                pen.MiterLimit = this.StrokeMiterLimit;
-                                switch (this.StrokeLineCap)
+                                pen.MiterLimit = StrokeMiterLimit;
+                                switch (StrokeLineCap)
                                 {
                                     case SvgStrokeLineCap.Round:
                                         pen.StartCap = LineCap.Round;
@@ -326,23 +316,23 @@ namespace Svg
         /// <param name="renderer">The <see cref="ISvgRenderer"/> to have its clipping region set.</param>
         protected internal virtual void SetClip(ISvgRenderer renderer)
         {
-            if (this.ClipPath != null || !string.IsNullOrEmpty(this.Clip))
+            if (ClipPath != null || !string.IsNullOrEmpty(Clip))
             {
-                this._previousClip = renderer.GetClip();
+                _previousClip = renderer.GetClip();
 
-                if (this.ClipPath != null)
+                if (ClipPath != null)
                 {
-                    SvgClipPath clipPath = this.OwnerDocument.GetElementById<SvgClipPath>(this.ClipPath.ToString());
+                    SvgClipPath clipPath = OwnerDocument.GetElementById<SvgClipPath>(ClipPath.ToString());
                     if (clipPath != null) renderer.SetClip(clipPath.GetClipRegion(this), CombineMode.Intersect);
                 }
 
-                var clip = this.Clip;
+                var clip = Clip;
                 if (!string.IsNullOrEmpty(clip) && clip.StartsWith("rect("))
                 {
                     clip = clip.Trim();
                     var offsets = (from o in clip.Substring(5, clip.Length - 6).Split(',')
                                    select float.Parse(o.Trim())).ToList();
-                    var bounds = this.Bounds;
+                    var bounds = Bounds;
                     var clipRect = new RectangleF(bounds.Left + offsets[3], bounds.Top + offsets[0],
                                                   bounds.Width - (offsets[3] + offsets[1]),
                                                   bounds.Height - (offsets[2] + offsets[0]));
@@ -357,10 +347,10 @@ namespace Svg
         /// <param name="renderer">The <see cref="ISvgRenderer"/> to have its clipping region reset.</param>
         protected internal virtual void ResetClip(ISvgRenderer renderer)
         {
-            if (this._previousClip != null)
+            if (_previousClip != null)
             {
-                renderer.SetClip(this._previousClip);
-                this._previousClip = null;
+                renderer.SetClip(_previousClip);
+                _previousClip = null;
             }
         }
 
@@ -370,7 +360,7 @@ namespace Svg
         /// <param name="renderer">The <see cref="ISvgRenderer"/> to have its clipping region set.</param>
         void ISvgClipable.SetClip(ISvgRenderer renderer)
         {
-            this.SetClip(renderer);
+            SetClip(renderer);
         }
 
         /// <summary>
@@ -379,33 +369,38 @@ namespace Svg
         /// <param name="renderer">The <see cref="ISvgRenderer"/> to have its clipping region reset.</param>
         void ISvgClipable.ResetClip(ISvgRenderer renderer)
         {
-            this.ResetClip(renderer);
+            ResetClip(renderer);
         }
 
+        /// <inheritdoc />
         public override SvgElement DeepCopy<T>()
         {
-            var newObj = base.DeepCopy<T>() as SvgVisualElement;
-            newObj.ClipPath = this.ClipPath;
-            newObj.ClipRule = this.ClipRule;
-            newObj.Filter = this.Filter;
+            if (base.DeepCopy<T>() is SvgVisualElement newObj)
+            {
+                newObj.ClipPath = ClipPath;
+                newObj.ClipRule = ClipRule;
+                newObj.Filter = Filter;
 
-            newObj.Visible = this.Visible;
-            if (this.Fill != null)
-                newObj.Fill = this.Fill;
-            if (this.Stroke != null)
-                newObj.Stroke = this.Stroke;
-            newObj.FillRule = this.FillRule;
-            newObj.FillOpacity = this.FillOpacity;
-            newObj.StrokeWidth = this.StrokeWidth;
-            newObj.StrokeLineCap = this.StrokeLineCap;
-            newObj.StrokeLineJoin = this.StrokeLineJoin;
-            newObj.StrokeMiterLimit = this.StrokeMiterLimit;
-            newObj.StrokeDashArray = this.StrokeDashArray;
-            newObj.StrokeDashOffset = this.StrokeDashOffset;
-            newObj.StrokeOpacity = this.StrokeOpacity;
-            newObj.Opacity = this.Opacity;
+                newObj.Visible = Visible;
+                if (Fill != null)
+                    newObj.Fill = Fill;
+                if (Stroke != null)
+                    newObj.Stroke = Stroke;
+                newObj.FillRule = FillRule;
+                newObj.FillOpacity = FillOpacity;
+                newObj.StrokeWidth = StrokeWidth;
+                newObj.StrokeLineCap = StrokeLineCap;
+                newObj.StrokeLineJoin = StrokeLineJoin;
+                newObj.StrokeMiterLimit = StrokeMiterLimit;
+                newObj.StrokeDashArray = StrokeDashArray;
+                newObj.StrokeDashOffset = StrokeDashOffset;
+                newObj.StrokeOpacity = StrokeOpacity;
+                newObj.Opacity = Opacity;
 
-            return newObj;
+                return newObj;
+            }
+
+            return null;
         }
 
     }

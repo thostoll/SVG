@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Svg.DataTypes;
+using Svg.Painting;
+using Svg.Rendering;
+using Svg.Text;
 
 namespace Svg
 {
@@ -13,13 +14,14 @@ namespace Svg
     {
         private SvgElement _owner;
 
+        /// <inheritdoc />
         /// <summary>
-        /// Initialises a new instance of a <see cref="SvgAttributeCollection"/> with the given <see cref="SvgElement"/> as the owner.
+        /// Initialises a new instance of a <see cref="T:Svg.SvgAttributeCollection" /> with the given <see cref="T:Svg.SvgElement" /> as the owner.
         /// </summary>
-        /// <param name="owner">The <see cref="SvgElement"/> owner of the collection.</param>
+        /// <param name="owner">The <see cref="T:Svg.SvgElement" /> owner of the collection.</param>
         public SvgAttributeCollection(SvgElement owner)
         {
-            this._owner = owner;
+            _owner = owner;
         }
 
         /// <summary>
@@ -30,12 +32,12 @@ namespace Svg
         /// <returns>The attribute value if available; otherwise the default value of <typeparamref name="TAttributeType"/>.</returns>
         public TAttributeType GetAttribute<TAttributeType>(string attributeName)
         {
-            if (this.ContainsKey(attributeName) && base[attributeName] != null)
+            if (ContainsKey(attributeName) && base[attributeName] != null)
             {
                 return (TAttributeType)base[attributeName];
             }
 
-            return this.GetAttribute<TAttributeType>(attributeName, default(TAttributeType));
+            return GetAttribute(attributeName, default(TAttributeType));
         }
 
         /// <summary>
@@ -47,7 +49,7 @@ namespace Svg
         /// <returns>The attribute value if available; otherwise the default value of <typeparamref name="T"/>.</returns>
         public T GetAttribute<T>(string attributeName, T defaultValue)
         {
-            if (this.ContainsKey(attributeName) && base[attributeName] != null)
+            if (ContainsKey(attributeName) && base[attributeName] != null)
             {
                 return (T)base[attributeName];
             }
@@ -63,21 +65,19 @@ namespace Svg
         /// <returns>The attribute value if available; otherwise the ancestors value for the same attribute; otherwise the default value of <typeparamref name="TAttributeType"/>.</returns>
         public TAttributeType GetInheritedAttribute<TAttributeType>(string attributeName)
         {
-            if (this.ContainsKey(attributeName) && !IsInheritValue(base[attributeName]))
+            if (attributeName == null) return default(TAttributeType);
+            if (ContainsKey(attributeName) && !IsInheritValue(base[attributeName]))
             {
                 var result = (TAttributeType)base[attributeName];
                 var deferred = result as SvgDeferredPaintServer;
-                if (deferred != null) deferred.EnsureServer(_owner);
+                deferred?.EnsureServer(_owner);
                 return result;
             }
 
-            if (this._owner.Parent != null)
+            var parentAttribute = _owner.Parent?.Attributes[attributeName];
+            if (parentAttribute != null)
             {
-                var parentAttribute = this._owner.Parent.Attributes[attributeName];
-                if (parentAttribute != null)
-                {
-                    return (TAttributeType)parentAttribute;
-                }
+                return (TAttributeType)parentAttribute;
             }
 
             return default(TAttributeType);
@@ -107,10 +107,10 @@ namespace Svg
         /// <returns>The attribute value associated with the specified name; If there is no attribute the parent's value will be inherited.</returns>
         public new object this[string attributeName]
         {
-            get { return this.GetInheritedAttribute<object>(attributeName); }
+            get => GetInheritedAttribute<object>(attributeName);
             set 
             {
-            	if(base.ContainsKey(attributeName))
+            	if(ContainsKey(attributeName))
             	{
 	            	var oldVal = base[attributeName];	            	
 	            	if(TryUnboxedCheck(oldVal, value))
@@ -130,20 +130,23 @@ namespace Svg
         private bool TryUnboxedCheck(object a, object b)
         {
         	if(IsValueType(a))
-        	{
-        		if(a is SvgUnit)
-        			return UnboxAndCheck<SvgUnit>(a, b);
-        		else if(a is bool)
-        			return UnboxAndCheck<bool>(a, b);
-        		else if(a is int)
-        			return UnboxAndCheck<int>(a, b);
-        		else if(a is float)
-        			return UnboxAndCheck<float>(a, b);
-        		else if(a is SvgViewBox)
-        			return UnboxAndCheck<SvgViewBox>(a, b);
-        		else
-        			return true;
-        	}
+            {
+                switch (a)
+                {
+                    case SvgUnit _:
+                        return UnboxAndCheck<SvgUnit>(a, b);
+                    case bool _:
+                        return UnboxAndCheck<bool>(a, b);
+                    case int _:
+                        return UnboxAndCheck<int>(a, b);
+                    case float _:
+                        return UnboxAndCheck<float>(a, b);
+                    case SvgViewBox _:
+                        return UnboxAndCheck<SvgViewBox>(a, b);
+                    default:
+                        return true;
+                }
+            }
         	else
         	{
         		return a != b;
@@ -170,7 +173,7 @@ namespace Svg
         	var handler = AttributeChanged;
         	if(handler != null)
         	{
-        		handler(this._owner, new AttributeEventArgs { Attribute = attribute, Value = value });
+        		handler(_owner, new AttributeEventArgs { Attribute = attribute, Value = value });
         	}
         }
     }
@@ -189,7 +192,7 @@ namespace Svg
         /// <param name="owner">The <see cref="SvgElement"/> owner of the collection.</param>
         public SvgCustomAttributeCollection(SvgElement owner)
         {
-            this._owner = owner;
+            _owner = owner;
         }
 
         /// <summary>
@@ -202,7 +205,7 @@ namespace Svg
         	get { return base[attributeName]; }
             set 
             {
-            	if(base.ContainsKey(attributeName))
+            	if(ContainsKey(attributeName))
             	{
 	            	var oldVal = base[attributeName];
 	            	base[attributeName] = value;
@@ -226,7 +229,7 @@ namespace Svg
         	var handler = AttributeChanged;
         	if(handler != null)
         	{
-        		handler(this._owner, new AttributeEventArgs { Attribute = attribute, Value = value });
+        		handler(_owner, new AttributeEventArgs { Attribute = attribute, Value = value });
         	}
         }
     }

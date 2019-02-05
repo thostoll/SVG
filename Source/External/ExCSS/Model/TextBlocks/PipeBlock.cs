@@ -1,5 +1,7 @@
 ﻿
-namespace Svg.ExCSS.Model.TextBlocks
+using Svg.ExCSS;
+
+namespace Svg.External.ExCSS.Model.TextBlocks
 {
     internal class PipeBlock : Block
     {

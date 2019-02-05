@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using Svg.Painting;
 
 namespace Svg.DataTypes
 {

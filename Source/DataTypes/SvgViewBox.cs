@@ -1,12 +1,13 @@
 ﻿using System;
-using System.Drawing;
 using System.ComponentModel;
-using System.Collections.Generic;
-using System.Text;
-using System.Globalization;
+using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Globalization;
+using Svg.Document_Structure;
+using Svg.Exceptions;
+using Svg.Rendering;
 
-namespace Svg
+namespace Svg.DataTypes
 {
     /// <summary>
     /// It is often desirable to specify that a given set of graphics stretch to fit a particular container element. The viewBox attribute provides this capability.
@@ -53,7 +54,7 @@ namespace Svg
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Svg.SvgViewBox"/> to <see cref="System.Drawing.RectangleF"/>.
+        /// Performs an implicit conversion from <see cref="SvgViewBox"/> to <see cref="System.Drawing.RectangleF"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -63,7 +64,7 @@ namespace Svg
         }
         
         /// <summary>
-        /// Performs an implicit conversion from <see cref="System.Drawing.RectangleF"/> to <see cref="Svg.SvgViewBox"/>.
+        /// Performs an implicit conversion from <see cref="System.Drawing.RectangleF"/> to <see cref="SvgViewBox"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>

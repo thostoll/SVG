@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
-namespace Svg.FilterEffects
+namespace Svg.Filter_Effects.feGaussianBlur
 {
     internal sealed class RawBitmap : IDisposable
     {

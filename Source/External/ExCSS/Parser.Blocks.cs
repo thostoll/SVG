@@ -1,10 +1,13 @@
 ﻿using System;
-using System.Text;
 using System.Collections.Generic;
+using System.Text;
+using Svg.ExCSS;
 using Svg.ExCSS.Model;
-using Svg.ExCSS.Model.TextBlocks;
+using Svg.External.ExCSS.Model;
+using Svg.External.ExCSS.Model.TextBlocks;
+using Svg.External.ExCSS.Model.Values;
 
-namespace Svg.ExCSS
+namespace Svg.External.ExCSS
 {
     public partial class Parser
     {

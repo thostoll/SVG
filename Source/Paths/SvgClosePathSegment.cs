@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Svg.Pathing
+namespace Svg.Paths
 {
     public sealed class SvgClosePathSegment : SvgPathSegment
     {

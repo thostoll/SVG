@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Drawing;
+﻿using System.Drawing;
+using Svg.DataTypes;
+using Svg.Painting;
+using Svg.Rendering;
 
 namespace Svg.Document_Structure
 {
@@ -10,7 +9,7 @@ namespace Svg.Document_Structure
     /// An element used to group SVG shapes.
     /// </summary>
     [SvgElement("symbol")]
-    public class SvgSymbol : SvgVisualElement
+    public class SvgSymbol : Basic_Shapes.SvgVisualElement
     {
 
         /// <summary>
@@ -55,17 +54,17 @@ namespace Svg.Document_Structure
                 var r = new RectangleF();
                 foreach (var c in this.Children)
                 {
-                    if (c is SvgVisualElement)
+                    if (c is Basic_Shapes.SvgVisualElement)
                     {
                         // First it should check if rectangle is empty or it will return the wrong Bounds.
                         // This is because when the Rectangle is Empty, the Union method adds as if the first values where X=0, Y=0
                         if (r.IsEmpty)
                         {
-                            r = ((SvgVisualElement)c).Bounds;
+                            r = ((Basic_Shapes.SvgVisualElement)c).Bounds;
                         }
                         else
                         {
-                            var childBounds = ((SvgVisualElement)c).Bounds;
+                            var childBounds = ((Basic_Shapes.SvgVisualElement)c).Bounds;
                             if (!childBounds.IsEmpty)
                             {
                                 r = RectangleF.Union(r, childBounds);

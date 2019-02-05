@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
+﻿using System.ComponentModel;
+using Svg.Painting;
 
-namespace Svg
+namespace Svg.DataTypes
 {
     /// <summary>Indicates the type of adjustments which the user agent shall make to make the rendered length of the text match the value specified on the ‘textLength’ attribute.</summary>
     /// <remarks>

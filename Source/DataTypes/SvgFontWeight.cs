@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ComponentModel;
+using Svg.Painting;
 
-namespace Svg
+namespace Svg.DataTypes
 {
     //TODO This should be split out to define an enum for the font face element and text element.
     /// <summary>The weight of a face relative to others in the same font family.</summary>

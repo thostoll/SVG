@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Linq;
+using Svg.Rendering;
 
-namespace Svg
+namespace Svg.Text
 {
     public class SvgFontDefn : IFontDefn
     {
@@ -126,7 +125,7 @@ namespace Svg
 
         private void EnsureDictionaries()
         {
-            if (_glyphs == null) _glyphs = _font.Descendants().OfType<SvgGlyph>().ToDictionary(g => g.Unicode ?? g.GlyphName ?? g.ID);
+            if (_glyphs == null) _glyphs = _font.Descendants().OfType<SvgGlyph>().ToDictionary(g => g.Unicode ?? g.GlyphName ?? g.Id);
             if (_kerning == null) _kerning = _font.Descendants().OfType<SvgKern>().ToDictionary(k => k.Glyph1 + "|" + k.Glyph2);
         }
 

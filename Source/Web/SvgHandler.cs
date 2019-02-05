@@ -1,16 +1,15 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Web;
 
 namespace Svg.Web
 {
+    /// <inheritdoc />
     /// <summary>
     /// A handler to asynchronously render Scalable Vector Graphics files (usually *.svg or *.xml file extensions).
     /// </summary>
@@ -20,58 +19,59 @@ namespace Svg.Web
     /// </remarks>
     public class SvgHandler : IHttpAsyncHandler
     {
-        Thread t;
+        Thread _t;
 
+        /// <inheritdoc />
         /// <summary>
-        /// Gets a value indicating whether another request can use the <see cref="T:System.Web.IHttpHandler"/> instance.
+        /// Gets a value indicating whether another request can use the <see cref="T:System.Web.IHttpHandler" /> instance.
         /// </summary>
         /// <value></value>
-        /// <returns>true if the <see cref="T:System.Web.IHttpHandler"/> instance is reusable; otherwise, false.</returns>
-        public bool IsReusable
-        {
-            get { return false; }
-        }
+        /// <returns>true if the <see cref="T:System.Web.IHttpHandler" /> instance is reusable; otherwise, false.</returns>
+        public bool IsReusable => false;
 
+        /// <inheritdoc />
         /// <summary>
-        /// Enables processing of HTTP Web requests by a custom HttpHandler that implements the <see cref="T:System.Web.IHttpHandler"/> interface.
+        /// Enables processing of HTTP Web requests by a custom HttpHandler that implements the <see cref="T:System.Web.IHttpHandler" /> interface.
         /// </summary>
-        /// <param name="context">An <see cref="T:System.Web.HttpContext"/> object that provides references to the intrinsic server objects (for example, Request, Response, Session, and Server) used to service HTTP requests.</param>
+        /// <param name="context">An <see cref="T:System.Web.HttpContext" /> object that provides references to the intrinsic server objects (for example, Request, Response, Session, and Server) used to service HTTP requests.</param>
         public void ProcessRequest(HttpContext context)
         {
             // Not used
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Initiates an asynchronous call to the HTTP handler.
         /// </summary>
-        /// <param name="context">An <see cref="T:System.Web.HttpContext"/> object that provides references to intrinsic server objects (for example, Request, Response, Session, and Server) used to service HTTP requests.</param>
-        /// <param name="cb">The <see cref="T:System.AsyncCallback"/> to call when the asynchronous method call is complete. If <paramref name="cb"/> is null, the delegate is not called.</param>
+        /// <param name="context">An <see cref="T:System.Web.HttpContext" /> object that provides references to intrinsic server objects (for example, Request, Response, Session, and Server) used to service HTTP requests.</param>
+        /// <param name="cb">The <see cref="T:System.AsyncCallback" /> to call when the asynchronous method call is complete. If <paramref name="cb" /> is null, the delegate is not called.</param>
         /// <param name="extraData">Any extra data needed to process the request.</param>
         /// <returns>
-        /// An <see cref="T:System.IAsyncResult"/> that contains information about the status of the process.
+        /// An <see cref="T:System.IAsyncResult" /> that contains information about the status of the process.
         /// </returns>
         public IAsyncResult BeginProcessRequest(HttpContext context, AsyncCallback cb, object extraData)
         {
-            string path = context.Request.PhysicalPath;
+            var path = context.Request.PhysicalPath;
 
             if (!File.Exists(path))
             {
                 throw new HttpException(404, "The requested file cannot be found.");
             }
 
-            SvgAsyncRenderState reqState = new SvgAsyncRenderState(context, cb, extraData);
-            SvgAsyncRender asyncRender = new SvgAsyncRender(reqState);
-            ThreadStart ts = new ThreadStart(asyncRender.RenderSvg);
-            t = new Thread(ts);
-            t.Start();
+            var reqState = new SvgAsyncRenderState(context, cb, extraData);
+            var asyncRender = new SvgAsyncRender(reqState);
+            var ts = new ThreadStart(asyncRender.RenderSvg);
+            _t = new Thread(ts);
+            _t.Start();
 
             return reqState;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Provides an asynchronous process End method when the process ends.
         /// </summary>
-        /// <param name="result">An <see cref="T:System.IAsyncResult"/> that contains information about the status of the process.</param>
+        /// <param name="result">An <see cref="T:System.IAsyncResult" /> that contains information about the status of the process.</param>
         public void EndProcessRequest(IAsyncResult result)
         {
             
@@ -86,61 +86,61 @@ namespace Svg.Web
 
             public SvgAsyncRender(SvgAsyncRenderState state)
             {
-                this._state = state;
+                _state = state;
             }
 
             private void RenderRawSvg()
             {
-                this._state._context.Response.ContentType = "image/svg+xml";
-                this._state._context.Response.WriteFile(this._state._context.Request.PhysicalPath);
-                this._state._context.Response.End();
-                this._state.CompleteRequest();
+                _state.Context.Response.ContentType = "image/svg+xml";
+                _state.Context.Response.WriteFile(_state.Context.Request.PhysicalPath);
+                _state.Context.Response.End();
+                _state.CompleteRequest();
             }
 
             public void RenderSvg()
             {
-                this._state._context.Response.AddFileDependency(this._state._context.Request.PhysicalPath);
-                this._state._context.Response.Cache.SetLastModifiedFromFileDependencies();
-                this._state._context.Response.Cache.SetETagFromFileDependencies();
-                this._state._context.Response.Buffer = false;
+                _state.Context.Response.AddFileDependency(_state.Context.Request.PhysicalPath);
+                _state.Context.Response.Cache.SetLastModifiedFromFileDependencies();
+                _state.Context.Response.Cache.SetETagFromFileDependencies();
+                _state.Context.Response.Buffer = false;
 
                 // Allow crawlers to see the raw XML - they can get more information from it that way
-                if (this._state._context.Request.Browser.Crawler || !string.IsNullOrEmpty(this._state._context.Request.QueryString["raw"]))
+                if (_state.Context.Request.Browser.Crawler || !string.IsNullOrEmpty(_state.Context.Request.QueryString["raw"]))
                 {
-                    this.RenderRawSvg();
+                    RenderRawSvg();
                 }
                 else
                 {
                     try
                     {
                         Dictionary<string, string> entities = new Dictionary<string, string>();
-                        NameValueCollection queryString = this._state._context.Request.QueryString;
+                        NameValueCollection queryString = _state.Context.Request.QueryString;
 
                         for (int i = 0; i < queryString.Count; i++)
                         {
                             entities.Add(queryString.Keys[i], queryString[i]);
                         }
 
-                        SvgDocument document = SvgDocument.Open<SvgDocument>(this._state._context.Request.PhysicalPath, entities);
+                        SvgDocument document = SvgDocument.Open<SvgDocument>(_state.Context.Request.PhysicalPath, entities);
 
                         using (Bitmap bitmap = document.Draw())
                         {
                             using (MemoryStream ms = new MemoryStream())
                             {
                                 bitmap.Save(ms, ImageFormat.Png);
-                                this._state._context.Response.ContentType = "image/png";
-                                ms.WriteTo(this._state._context.Response.OutputStream);
+                                _state.Context.Response.ContentType = "image/png";
+                                ms.WriteTo(_state.Context.Response.OutputStream);
                             }
                         }
                     }
                     catch (Exception exc)
                     {
-                        System.Diagnostics.Trace.TraceError("An error occured while attempting to render the SVG image '" + this._state._context.Request.PhysicalPath + "': " + exc.Message);
+                        System.Diagnostics.Trace.TraceError("An error occured while attempting to render the SVG image '" + _state.Context.Request.PhysicalPath + "': " + exc.Message);
                     }
                     finally
                     {
-                        this._state._context.Response.End();
-                        this._state.CompleteRequest();
+                        _state.Context.Response.End();
+                        _state.CompleteRequest();
                     }
                 }
             }
@@ -151,11 +151,11 @@ namespace Svg.Web
         /// </summary>
         protected sealed class SvgAsyncRenderState : IAsyncResult
         {
-            internal HttpContext _context;
-            internal AsyncCallback _callback;
-            internal object _extraData;
-            private bool _isCompleted = false;
-            private ManualResetEvent _callCompleteEvent = null;
+            internal HttpContext Context;
+            internal AsyncCallback Callback;
+            internal object ExtraData;
+            private bool _isCompleted;
+            private ManualResetEvent _callCompleteEvent;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="SvgAsyncRenderState"/> class.
@@ -165,9 +165,9 @@ namespace Svg.Web
             /// <param name="extraData">The extra data.</param>
             public SvgAsyncRenderState(HttpContext context, AsyncCallback callback, object extraData)
             {
-                _context = context;
-                _callback = callback;
-                _extraData = extraData;
+                Context = context;
+                Callback = callback;
+                ExtraData = extraData;
             }
 
             /// <summary>
@@ -178,16 +178,10 @@ namespace Svg.Web
                 _isCompleted = true;
                 lock (this)
                 {
-                    if (this.AsyncWaitHandle != null)
-                    {
-                        this._callCompleteEvent.Set();
-                    }
+                    _callCompleteEvent.Set();
                 }
                 // if a callback was registered, invoke it now
-                if (_callback != null)
-                {
-                    _callback(this);
-                }
+                Callback?.Invoke(this);
             }
 
             /// <summary>
@@ -195,7 +189,7 @@ namespace Svg.Web
             /// </summary>
             /// <value></value>
             /// <returns>A user-defined object that qualifies or contains information about an asynchronous operation.</returns>
-            public object AsyncState { get { return (_extraData); } }
+            public object AsyncState { get { return (ExtraData); } }
             /// <summary>
             /// Gets an indication of whether the asynchronous operation completed synchronously.
             /// </summary>

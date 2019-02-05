@@ -1,10 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
-using System.Drawing.Drawing2D;
+using Svg.Rendering;
 
-namespace Svg
+namespace Svg.Clipping_and_Masking
 {
     /// <summary>
     /// Defines the methods and properties that an <see cref="SvgElement"/> must implement to support clipping.

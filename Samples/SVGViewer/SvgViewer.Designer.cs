@@ -1,6 +1,6 @@
 ﻿namespace SVGViewer
 {
-    partial class SVGViewer
+    partial class SvgViewer
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SVGViewer));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SvgViewer));
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.open = new System.Windows.Forms.ToolStripButton();
             this.svgImage = new System.Windows.Forms.PictureBox();
@@ -81,12 +81,12 @@
             this.textBox1.MaxLength = 327670;
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(307, 446);
+            this.textBox1.Size = new System.Drawing.Size(307, 449);
             this.textBox1.TabIndex = 2;
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             this.textBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyDown);
             // 
-            // SVGViewer
+            // SvgViewer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -94,7 +94,7 @@
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.svgImage);
             this.Controls.Add(this.toolStrip1);
-            this.Name = "SVGViewer";
+            this.Name = "SvgViewer";
             this.Text = "SVG Viewer";
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();

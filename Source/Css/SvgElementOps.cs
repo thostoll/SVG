@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Fizzler;
+using Svg.External.Fizzler;
 
 namespace Svg.Css
 {
@@ -32,7 +31,7 @@ namespace Svg.Css
 
         public Selector<SvgElement> Id(string id)
         {
-            return nodes => nodes.Where(n => n.ID == id);
+            return nodes => nodes.Where(n => n.Id == id);
         }
 
         public Selector<SvgElement> Class(string clazz)

@@ -1,6 +1,8 @@
 using System.Drawing.Drawing2D;
+using Svg.DataTypes;
+using Svg.Rendering;
 
-namespace Svg
+namespace Svg.Painting
 {
     /// <summary>
     /// Defines the methods and properties required for an SVG element to be styled.

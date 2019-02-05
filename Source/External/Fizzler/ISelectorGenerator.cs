@@ -19,7 +19,7 @@
 // 
 #endregion
 
-namespace Fizzler
+namespace Svg.External.Fizzler
 {
     /// <summary>
     /// Represent an implementation that is responsible for generating

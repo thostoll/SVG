@@ -19,10 +19,10 @@
 // 
 #endregion
 
-namespace Fizzler
-{
-    using System;
+using System;
 
+namespace Svg.External.Fizzler
+{
     /// <summary>
     /// An <see cref="ISelectorGenerator"/> implementation that generates
     /// human-readable description of the selector.

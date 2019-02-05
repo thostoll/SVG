@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+using Svg.ExCSS;
 using Svg.ExCSS.Model;
-using Svg.ExCSS.Model.TextBlocks;
-
+using Svg.External.ExCSS.Model;
+using Svg.External.ExCSS.Model.TextBlocks;
+using Svg.External.ExCSS.Model.Values;
 // ReSharper disable once CheckNamespace
-using System;
 
 //The MIT License (MIT)
 
@@ -30,7 +30,7 @@ using System;
 //SOFTWARE.
 
 
-namespace Svg.ExCSS
+namespace Svg.External.ExCSS
 {
     internal delegate void ParseErrorEventHandler(StylesheetParseError e);
 
@@ -95,7 +95,7 @@ namespace Svg.ExCSS
 
         internal static RuleSet ParseRule(string css)
         {
-            var parser = new Parser();
+            var parser = new External.ExCSS.Parser();
             
 
             var styleSheet = parser.Parse(css);
@@ -115,7 +115,7 @@ namespace Svg.ExCSS
 
         internal static void AppendDeclarations(StyleDeclaration list, string css, bool quirksMode = false)
         {
-            var parser = new Parser();//(new StyleSheet(), new StylesheetReader(declarations))
+            var parser = new External.ExCSS.Parser();//(new StyleSheet(), new StylesheetReader(declarations))
            
 
             parser.AddRuleSet(list.ParentRule ?? new StyleRule(list));

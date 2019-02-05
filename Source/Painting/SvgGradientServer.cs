@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using Svg.DataTypes;
+using Svg.Rendering;
 using Svg.Transforms;
 
-namespace Svg
+namespace Svg.Painting
 {
     /// <summary>
     /// Provides the base class for all paint servers that wish to render a gradient.
@@ -216,7 +218,7 @@ namespace Svg
             return blend;
         }
 
-        protected void LoadStops(SvgVisualElement parent)
+        protected void LoadStops(Basic_Shapes.SvgVisualElement parent)
         {
             var core = SvgDeferredPaintServer.TryGet<SvgGradientServer>(_inheritGradient, parent);
             if (this.Stops.Count == 0 && core != null)

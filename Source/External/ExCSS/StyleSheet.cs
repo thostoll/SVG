@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Svg.ExCSS.Model.Extensions;
+using Svg.External.ExCSS;
+using Svg.External.ExCSS.Model.Extensions;
 
 // ReSharper disable once CheckNamespace
 namespace Svg.ExCSS
@@ -39,7 +40,7 @@ namespace Svg.ExCSS
                 return this;
             }
 
-            var value = Parser.ParseRule(rule);
+            var value = External.ExCSS.Parser.ParseRule(rule);
             _rules.Insert(index, value);
 
             return this;

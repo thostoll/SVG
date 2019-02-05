@@ -1,32 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using Svg.DataTypes;
-
-namespace Svg
+﻿namespace Svg.Text
 {
     /// <summary>
     /// The <see cref="SvgText"/> element defines a graphics element consisting of text.
     /// </summary>
     [SvgElement("text")]
-    public class SvgText : SvgTextBase
+    public sealed class SvgText : SvgTextBase
     {
         /// <summary>
         /// Initializes the <see cref="SvgText"/> class.
         /// </summary>
-        public SvgText() : base() { }
+        public SvgText()
+        { }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Initializes a new instance of the <see cref="SvgText"/> class.
+        /// Initializes a new instance of the <see cref="T:Svg.Text.SvgText" /> class.
         /// </summary>
         /// <param name="text">The text.</param>
         public SvgText(string text)
             : this()
         {
-            this.Text = text;
+            Text = text;
         }
 
         public override SvgElement DeepCopy()
@@ -36,17 +30,21 @@ namespace Svg
 
         public override SvgElement DeepCopy<T>()
         {
-            var newObj = base.DeepCopy<T>() as SvgText;
-            newObj.TextAnchor = this.TextAnchor;
-            newObj.WordSpacing = this.WordSpacing;
-            newObj.LetterSpacing = this.LetterSpacing;
-            newObj.Font = this.Font;
-            newObj.FontFamily = this.FontFamily;
-            newObj.FontSize = this.FontSize;
-            newObj.FontWeight = this.FontWeight;
-            newObj.X = this.X;
-            newObj.Y = this.Y;
-            return newObj;
+            if (base.DeepCopy<T>() is SvgText newObj)
+            {
+                newObj.TextAnchor = TextAnchor;
+                newObj.WordSpacing = WordSpacing;
+                newObj.LetterSpacing = LetterSpacing;
+                newObj.Font = Font;
+                newObj.FontFamily = FontFamily;
+                newObj.FontSize = FontSize;
+                newObj.FontWeight = FontWeight;
+                newObj.X = X;
+                newObj.Y = Y;
+                return newObj;
+            }
+
+            return null;
         }
     }
 }

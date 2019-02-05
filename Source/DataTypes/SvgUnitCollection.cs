@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 
-namespace Svg
+namespace Svg.DataTypes
 {
     /// <summary>
     /// Represents a list of <see cref="SvgUnit"/>.

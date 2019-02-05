@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ComponentModel;
+﻿using System.ComponentModel;
+using Svg.Painting;
 
-namespace Svg
+namespace Svg.Text
 {
     /// <summary>
     /// Text anchor is used to align (start-, middle- or end-alignment) a string of text relative to a given point.

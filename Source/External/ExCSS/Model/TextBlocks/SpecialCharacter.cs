@@ -1,5 +1,8 @@
 ﻿
-namespace Svg.ExCSS.Model.TextBlocks
+using Svg.ExCSS;
+using Svg.ExCSS.Model;
+
+namespace Svg.External.ExCSS.Model.TextBlocks
 {
     internal class SpecialCharacter : CharacterBlock
     {

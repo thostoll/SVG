@@ -1,4 +1,7 @@
 ﻿// ReSharper disable once CheckNamespace
+
+using Svg.External.ExCSS;
+
 namespace Svg.ExCSS
 {
     internal sealed class FirstChildSelector : BaseSelector, IToString

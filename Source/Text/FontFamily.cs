@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 
 namespace Svg.Text
@@ -13,107 +11,100 @@ namespace Svg.Text
     {
         #region InstalledFont Parameters
 
-        string _fontName = string.Empty;
-        string _fontSubFamily = string.Empty;
-        string _fontPath = string.Empty;
-
         #endregion
 
         #region InstalledFont Constructor
 
         private FontFamily(string fontName, string fontSubFamily, string fontPath)
         {
-            _fontName = fontName;
-            _fontSubFamily = fontSubFamily;
-            _fontPath = fontPath;
+            FontName = fontName;
+            FontSubFamily = fontSubFamily;
+            FontPath = fontPath;
         }
 
         #endregion
 
         #region InstalledFont Properties
 
-        public string FontName { get { return _fontName; } set { _fontName = value; } }
-        public string FontSubFamily { get { return _fontSubFamily; } set { _fontSubFamily = value; } }
-        public string FontPath { get { return _fontPath; } set { _fontPath = value; } }
+        public string FontName { get; set; }
+
+        public string FontSubFamily { get; set; }
+
+        public string FontPath { get; set; }
 
         #endregion
 
-        static public FontFamily FromPath(string fontFilePath)
+        public static FontFamily FromPath(string fontFilePath)
         {
-            string FontName = string.Empty;
-            string FontSubFamily = string.Empty;
-            string encStr = "UTF-8";
-            string strRet = string.Empty;
+            var fontName = string.Empty;
+            var fontSubFamily = string.Empty;
+            const string encStr = "UTF-8";
 
-            using (FileStream fs = new FileStream(fontFilePath, FileMode.Open, FileAccess.Read))
+            using (var fs = new FileStream(fontFilePath, FileMode.Open, FileAccess.Read))
             {
 
-                TT_OFFSET_TABLE ttOffsetTable = new TT_OFFSET_TABLE()
+                var ttOffsetTable = new TtOffsetTable()
                 {
-                    uMajorVersion = ReadUShort(fs),
-                    uMinorVersion = ReadUShort(fs),
-                    uNumOfTables = ReadUShort(fs),
-                    uSearchRange = ReadUShort(fs),
-                    uEntrySelector = ReadUShort(fs),
-                    uRangeShift = ReadUShort(fs),
+                    UMajorVersion = ReadUShort(fs),
+                    UMinorVersion = ReadUShort(fs),
+                    UNumOfTables = ReadUShort(fs),
+                    USearchRange = ReadUShort(fs),
+                    UEntrySelector = ReadUShort(fs),
+                    URangeShift = ReadUShort(fs),
                 };
 
-                TT_TABLE_DIRECTORY tblDir = new TT_TABLE_DIRECTORY();
-                bool found = false;
-                for (int i = 0; i <= ttOffsetTable.uNumOfTables; i++)
+                var tblDir = new TtTableDirectory();
+                var found = false;
+                for (var i = 0; i <= ttOffsetTable.UNumOfTables; i++)
                 {
-                    tblDir = new TT_TABLE_DIRECTORY();
+                    tblDir = new TtTableDirectory();
                     tblDir.Initialize();
-                    fs.Read(tblDir.szTag, 0, tblDir.szTag.Length);
-                    tblDir.uCheckSum = ReadULong(fs);
-                    tblDir.uOffset = ReadULong(fs);
-                    tblDir.uLength = ReadULong(fs);
+                    fs.Read(tblDir.SzTag, 0, tblDir.SzTag.Length);
+                    tblDir.UCheckSum = ReadULong(fs);
+                    tblDir.UOffset = ReadULong(fs);
+                    tblDir.ULength = ReadULong(fs);
 
-                    Encoding enc = Encoding.GetEncoding(encStr);
-                    string s = enc.GetString(tblDir.szTag);
+                    var enc = Encoding.GetEncoding(encStr);
+                    var s = enc.GetString(tblDir.SzTag);
 
-                    if (s.CompareTo("name") == 0)
-                    {
-                        found = true;
-                        break;
-                    }
+                    if (string.Compare(s, "name", StringComparison.Ordinal) != 0) continue;
+                    found = true;
+                    break;
                 }
 
                 if (!found) return null;
 
-                fs.Seek(tblDir.uOffset, SeekOrigin.Begin);
+                fs.Seek(tblDir.UOffset, SeekOrigin.Begin);
 
-                TT_NAME_TABLE_HEADER ttNTHeader = new TT_NAME_TABLE_HEADER
+                var ttNtHeader = new TtNameTableHeader
                 {
-                    uFSelector = ReadUShort(fs),
-                    uNRCount = ReadUShort(fs),
-                    uStorageOffset = ReadUShort(fs)
+                    UfSelector = ReadUShort(fs),
+                    UNrCount = ReadUShort(fs),
+                    UStorageOffset = ReadUShort(fs)
                 };
 
-                TT_NAME_RECORD ttRecord = new TT_NAME_RECORD();
-
-                for (int j = 0; j <= ttNTHeader.uNRCount; j++)
+                for (var j = 0; j <= ttNtHeader.UNrCount; j++)
                 {
-                    ttRecord = new TT_NAME_RECORD()
+                    var ttRecord = new TtNameRecord()
                     {
-                        uPlatformID = ReadUShort(fs),
-                        uEncodingID = ReadUShort(fs),
-                        uLanguageID = ReadUShort(fs),
-                        uNameID = ReadUShort(fs),
-                        uStringLength = ReadUShort(fs),
-                        uStringOffset = ReadUShort(fs)
+                        UPlatformId = ReadUShort(fs),
+                        UEncodingId = ReadUShort(fs),
+                        ULanguageId = ReadUShort(fs),
+                        UNameId = ReadUShort(fs),
+                        UStringLength = ReadUShort(fs),
+                        UStringOffset = ReadUShort(fs)
                     };
 
-                    if (ttRecord.uNameID > 2) { break; }
+                    if (ttRecord.UNameId > 2) { break; }
 
-                    long nPos = fs.Position;
-                    fs.Seek(tblDir.uOffset + ttRecord.uStringOffset + ttNTHeader.uStorageOffset, SeekOrigin.Begin);
+                    var nPos = fs.Position;
+                    fs.Seek(tblDir.UOffset + ttRecord.UStringOffset + ttNtHeader.UStorageOffset, SeekOrigin.Begin);
 
-                    byte[] buf = new byte[ttRecord.uStringLength];
-                    fs.Read(buf, 0, ttRecord.uStringLength);
+                    var buf = new byte[ttRecord.UStringLength];
+                    fs.Read(buf, 0, ttRecord.UStringLength);
 
                     Encoding enc;
-                    if (ttRecord.uEncodingID == 3 || ttRecord.uEncodingID == 1)
+                    if (ttRecord.UEncodingId == 3 || ttRecord.UEncodingId == 1)
                     {
                         enc = Encoding.BigEndianUnicode;
                     }
@@ -122,93 +113,93 @@ namespace Svg.Text
                         enc = Encoding.UTF8;
                     }
 
-                    strRet = enc.GetString(buf);
-                    if (ttRecord.uNameID == 1) { FontName = strRet; }
-                    if (ttRecord.uNameID == 2) { FontSubFamily = strRet; }
+                    var strRet = enc.GetString(buf);
+                    if (ttRecord.UNameId == 1) { fontName = strRet; }
+                    if (ttRecord.UNameId == 2) { fontSubFamily = strRet; }
 
                     fs.Seek(nPos, SeekOrigin.Begin);
                 }
 
-                return new FontFamily(FontName, FontSubFamily, fontFilePath);
+                return new FontFamily(fontName, fontSubFamily, fontFilePath);
             }
         }
 
         [CLSCompliant(false)]
-        public struct TT_OFFSET_TABLE
+        public struct TtOffsetTable
         {
-            public ushort uMajorVersion;
-            public ushort uMinorVersion;
-            public ushort uNumOfTables;
-            public ushort uSearchRange;
-            public ushort uEntrySelector;
-            public ushort uRangeShift;
+            public ushort UMajorVersion;
+            public ushort UMinorVersion;
+            public ushort UNumOfTables;
+            public ushort USearchRange;
+            public ushort UEntrySelector;
+            public ushort URangeShift;
         }
 
         [CLSCompliant(false)]
-        public struct TT_TABLE_DIRECTORY
+        public struct TtTableDirectory
         {
-            public byte[] szTag;
-            public UInt32 uCheckSum;
-            public UInt32 uOffset;
-            public UInt32 uLength;
+            public byte[] SzTag;
+            public uint UCheckSum;
+            public uint UOffset;
+            public uint ULength;
             public void Initialize()
             {
-                szTag = new byte[4];
+                SzTag = new byte[4];
             }
         }
 
         [CLSCompliant(false)]
-        public struct TT_NAME_TABLE_HEADER
+        public struct TtNameTableHeader
         {
-            public ushort uFSelector;
-            public ushort uNRCount;
-            public ushort uStorageOffset;
+            public ushort UfSelector;
+            public ushort UNrCount;
+            public ushort UStorageOffset;
         }
 
         [CLSCompliant(false)]
-        public struct TT_NAME_RECORD
+        public struct TtNameRecord
         {
-            public ushort uPlatformID;
-            public ushort uEncodingID;
-            public ushort uLanguageID;
-            public ushort uNameID;
-            public ushort uStringLength;
-            public ushort uStringOffset;
+            public ushort UPlatformId;
+            public ushort UEncodingId;
+            public ushort ULanguageId;
+            public ushort UNameId;
+            public ushort UStringLength;
+            public ushort UStringOffset;
         }
 
-        static private UInt16 ReadChar(FileStream fs, int characters)
+        private static ushort ReadChar(Stream fs, int characters)
         {
-            string[] s = new string[characters];
-            byte[] buf = new byte[Convert.ToByte(s.Length)];
+            var s = new string[characters];
+            var buf = new byte[Convert.ToByte(s.Length)];
 
             buf = ReadAndSwap(fs, buf.Length);
             return BitConverter.ToUInt16(buf, 0);
         }
 
-        static private UInt16 ReadByte(FileStream fs)
+        private static ushort ReadByte(Stream fs)
         {
-            byte[] buf = new byte[11];
+            var buf = new byte[11];
             buf = ReadAndSwap(fs, buf.Length);
             return BitConverter.ToUInt16(buf, 0);
         }
 
-        static private UInt16 ReadUShort(FileStream fs)
+        private static ushort ReadUShort(Stream fs)
         {
-            byte[] buf = new byte[2];
+            var buf = new byte[2];
             buf = ReadAndSwap(fs, buf.Length);
             return BitConverter.ToUInt16(buf, 0);
         }
 
-        static private UInt32 ReadULong(FileStream fs)
+        private static uint ReadULong(Stream fs)
         {
-            byte[] buf = new byte[4];
+            var buf = new byte[4];
             buf = ReadAndSwap(fs, buf.Length);
             return BitConverter.ToUInt32(buf, 0);
         }
 
-        static private byte[] ReadAndSwap(FileStream fs, int size)
+        private static byte[] ReadAndSwap(Stream fs, int size)
         {
-            byte[] buf = new byte[size];
+            var buf = new byte[size];
             fs.Read(buf, 0, buf.Length);
             Array.Reverse(buf);
             return buf;

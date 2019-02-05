@@ -1,11 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using Svg.DataTypes;
+using Svg.Rendering;
 using Svg.Transforms;
 
-namespace Svg
+namespace Svg.Clipping_and_Masking
 {
     /// <summary>
     /// Defines a path that can be used by other <see cref="ISvgClipable"/> elements.
@@ -35,7 +34,7 @@ namespace Svg
         /// Gets this <see cref="SvgClipPath"/>'s region to be used as a clipping region.
         /// </summary>
         /// <returns>A new <see cref="Region"/> containing the <see cref="Region"/> to be used for clipping.</returns>
-        public Region GetClipRegion(SvgVisualElement owner)
+        public Region GetClipRegion(Basic_Shapes.SvgVisualElement owner)
         {
             if (cachedClipPath == null || this._pathDirty)
             {
@@ -72,7 +71,7 @@ namespace Svg
         /// <param name="element"></param>
         private void CombinePaths(GraphicsPath path, SvgElement element)
         {
-            var graphicsElement = element as SvgVisualElement;
+            var graphicsElement = element as Basic_Shapes.SvgVisualElement;
 
             if (graphicsElement != null && graphicsElement.Path(null) != null)
             {

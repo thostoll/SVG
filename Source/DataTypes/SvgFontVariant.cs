@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ComponentModel;
+﻿using System.ComponentModel;
+using Svg.Painting;
 
-namespace Svg
+namespace Svg.DataTypes
 {
     [TypeConverter(typeof(SvgFontVariantConverter))]
     public enum SvgFontVariant

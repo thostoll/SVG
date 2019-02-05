@@ -1,7 +1,8 @@
 using System.Drawing.Drawing2D;
-using Svg.Pathing;
+using Svg.Basic_Shapes;
+using Svg.Rendering;
 
-namespace Svg
+namespace Svg.Paths
 {
     /// <summary>
     /// Represents an SVG path element.

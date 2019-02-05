@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.ComponentModel;
 
-namespace Svg
+namespace Svg.Document_Structure
 {
     [DefaultProperty("Text")]
     [SvgElement("desc")]

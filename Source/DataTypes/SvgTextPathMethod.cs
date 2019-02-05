@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
+﻿using System.ComponentModel;
+using Svg.Painting;
 
-namespace Svg
+namespace Svg.DataTypes
 {
     /// <summary>Indicates the method by which text should be rendered along the path.</summary>
     [TypeConverter(typeof(SvgTextPathMethodConverter))]

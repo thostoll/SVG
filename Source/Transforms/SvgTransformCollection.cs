@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using System.Linq;
-using System.Text;
 
 namespace Svg.Transforms
 {
@@ -48,7 +47,7 @@ namespace Svg.Transforms
     		var transformMatrix =  new Matrix();
     		
     		// Return if there are no transforms
-            if (this.Count == 0)
+            if (Count == 0)
             {
             	return transformMatrix;
             }
@@ -62,11 +61,9 @@ namespace Svg.Transforms
     	}
 
 		public override bool Equals(object obj)
-		{
-			if (this.Count == 0 && this.Count == base.Count) //default will be an empty list 
-				return true;
-			return base.Equals(obj);
-		}
+        {
+            return Count == 0 || base.Equals(obj);
+        }
 
         public override int GetHashCode()
         {
@@ -75,8 +72,8 @@ namespace Svg.Transforms
 
 		public new SvgTransform this[int i]
         {
-			get { return base[i]; }
-			set
+			get => base[i];
+            set
 			{
 				var oldVal = base[i];
 				base[i] = value;
@@ -93,11 +90,8 @@ namespace Svg.Transforms
         protected void OnTransformChanged()
         {
         	var handler = TransformChanged;
-        	if(handler != null)
-        	{
-        		//make a copy of the current value to avoid collection changed exceptions
-        		handler(this, new AttributeEventArgs { Attribute = "transform", Value = this.Clone() });
-        	}
+            //make a copy of the current value to avoid collection changed exceptions
+            handler?.Invoke(this, new AttributeEventArgs { Attribute = "transform", Value = Clone() });
         }	
     	
 		public object Clone()
@@ -112,7 +106,7 @@ namespace Svg.Transforms
 
         public override string ToString()
         {
-            if (this.Count < 1) return string.Empty;
+            if (Count < 1) return string.Empty;
             return (from t in this select t.ToString()).Aggregate((p,c) => p + " " + c);
         }
     }

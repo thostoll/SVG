@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Svg.ExCSS;
+using Svg.External.ExCSS.Model.Values;
 
-namespace Svg.ExCSS.Model
+namespace Svg.External.ExCSS.Model
 {
     internal class FunctionBuffer
     {

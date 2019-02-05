@@ -5,7 +5,7 @@ using System.Drawing;
 using System.Globalization;
 using System.Linq;
 
-namespace Svg
+namespace Svg.Painting
 {
     internal class SvgPaintServerFactory : TypeConverter
     {
@@ -153,7 +153,7 @@ namespace Svg
 
                 if (value != null)
                 {
-                    return string.Format(CultureInfo.InvariantCulture, "url(#{0})", ((SvgPaintServer)value).ID);
+                    return string.Format(CultureInfo.InvariantCulture, "url(#{0})", ((SvgPaintServer)value).Id);
                 }
                 else
                 {

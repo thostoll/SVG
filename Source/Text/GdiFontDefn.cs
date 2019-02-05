@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Linq;
+using Svg.Rendering;
 
-namespace Svg
+namespace Svg.Text
 {
     public class GdiFontDefn : IFontDefn
     {

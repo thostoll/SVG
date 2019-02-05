@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ComponentModel;
 using System.Globalization;
+using System.Text;
+using Svg.Basic_Shapes;
+using Svg.Paths;
 
-namespace Svg
+namespace Svg.DataTypes
 {
     /// <summary>
-    /// Represents a list of <see cref="SvgUnit"/> used with the <see cref="SvgPolyline"/> and <see cref="SvgPolygon"/>.
+    /// Represents a list of <see cref="SvgUnit"/> used with the <see cref="SvgPolygon"/> and <see cref="SvgPolyline"/>.
     /// </summary>
     [TypeConverter(typeof(SvgPointCollectionConverter))]
     public class SvgPointCollection : List<SvgUnit>

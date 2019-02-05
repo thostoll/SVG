@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Svg;
 using System.IO;
 
 namespace Entities
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main()
         {
-            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\sample.svg");
+            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\sample.svg");
 
             var sampleDoc = SvgDocument.Open(filePath, new Dictionary<string, string> 
                 {

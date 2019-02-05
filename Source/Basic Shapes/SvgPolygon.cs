@@ -1,7 +1,9 @@
-using System.Drawing.Drawing2D;
 using System.Diagnostics;
+using System.Drawing.Drawing2D;
+using Svg.DataTypes;
+using Svg.Rendering;
 
-namespace Svg
+namespace Svg.Basic_Shapes
 {
     /// <summary>
     /// SvgPolygon defines a closed shape consisting of a set of connected straight line segments.
@@ -17,20 +19,20 @@ namespace Svg
         [SvgAttribute("points")]
         public SvgPointCollection Points
         {
-            get { return this.Attributes["points"] as SvgPointCollection; }
-            set { this.Attributes["points"] = value; this.IsPathDirty = true; }
+            get { return Attributes["points"] as SvgPointCollection; }
+            set { Attributes["points"] = value; IsPathDirty = true; }
         }
 
         public override GraphicsPath Path(ISvgRenderer renderer)
         {
-            if (this._path == null || this.IsPathDirty)
+            if (_path == null || IsPathDirty)
             {
-                this._path = new GraphicsPath();
-                this._path.StartFigure();
+                _path = new GraphicsPath();
+                _path.StartFigure();
 
                 try
                 {
-                    var points = this.Points;
+                    var points = Points;
                     for (int i = 2; (i + 1) < points.Count; i += 2)
                     {
                         var endPoint = SvgUnit.GetDevicePoint(points[i], points[i + 1], renderer, this);
@@ -60,11 +62,11 @@ namespace Svg
                     Trace.TraceError("Error parsing points");
                 }
 
-                this._path.CloseFigure();
+                _path.CloseFigure();
                 if (renderer != null)
-                  this.IsPathDirty = false;
+                  IsPathDirty = false;
             }
-            return this._path;
+            return _path;
         }
 
 		public override SvgElement DeepCopy()
@@ -76,7 +78,7 @@ namespace Svg
 		{
 			var newObj = base.DeepCopy<T>() as SvgPolygon;
 			newObj.Points = new SvgPointCollection();
-			foreach (var pt in this.Points)
+			foreach (var pt in Points)
 				newObj.Points.Add(pt);
 			return newObj;
 		}

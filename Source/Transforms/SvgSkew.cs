@@ -27,14 +27,7 @@ namespace Svg.Transforms
 
         public override string WriteToString()
         {
-            if (this.AngleY == 0)
-            {
-                return string.Format(CultureInfo.InvariantCulture, "skewX({0})", this.AngleX);
-            }
-            else
-            {
-                return string.Format(CultureInfo.InvariantCulture, "skewY({0})", this.AngleY);
-            }
+            return Math.Abs(AngleY) < 0.001 ? string.Format(CultureInfo.InvariantCulture, "skewX({0})", AngleX) : string.Format(CultureInfo.InvariantCulture, "skewY({0})", AngleY);
         }
 
         public SvgSkew(float x, float y)
@@ -46,7 +39,7 @@ namespace Svg.Transforms
 
 		public override object Clone()
 		{
-			return new SvgSkew(this.AngleX, this.AngleY);
+			return new SvgSkew(AngleX, AngleY);
 		}
     }
 }

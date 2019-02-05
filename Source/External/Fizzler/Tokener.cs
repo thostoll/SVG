@@ -19,16 +19,16 @@
 // 
 #endregion
 
-namespace Fizzler
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Text;
+
+namespace Svg.External.Fizzler
 {
     #region Imports
 
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.IO;
-    using System.Text;
-    
     #endregion
 
     /// <summary>

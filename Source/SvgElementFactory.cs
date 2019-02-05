@@ -5,7 +5,9 @@ using System.Xml;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using Svg.Document_Structure;
 using Svg.ExCSS;
+using Parser = Svg.External.ExCSS.Parser;
 
 namespace Svg
 {
@@ -139,13 +141,13 @@ namespace Svg
                     {
                         foreach (var decl in rule.Declarations)
                         {
-                            element.AddStyle(decl.Name, decl.Term.ToString(), SvgElement.StyleSpecificity_InlineStyle);
+                            element.AddStyle(decl.Name, decl.Term.ToString(), SvgElement.StyleSpecificityInlineStyle);
                         }
                     }
                 }
                 else if (IsStyleAttribute(reader.LocalName))
                 {
-                    element.AddStyle(reader.LocalName, reader.Value, SvgElement.StyleSpecificity_PresAttribute);
+                    element.AddStyle(reader.LocalName, reader.Value, SvgElement.StyleSpecificityPresAttribute);
                 }
                 else
                 {

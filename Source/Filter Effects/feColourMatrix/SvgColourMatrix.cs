@@ -1,10 +1,9 @@
 using System;
 using System.Drawing;
-using System.Collections.Generic;
-using System.Linq;
 using System.Drawing.Imaging;
+using System.Linq;
 
-namespace Svg.FilterEffects
+namespace Svg.Filter_Effects.feColourMatrix
 {
 	/// <summary>
 	/// Note: this is not used in calculations to bitmap - used only to allow for svg xml output

@@ -19,7 +19,7 @@
 // 
 #endregion
 
-namespace Fizzler
+namespace Svg.External.Fizzler
 {
     /// <summary>
     /// Represents a selectors implementation for an arbitrary document/node system.

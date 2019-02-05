@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
+﻿using System.ComponentModel;
 
-namespace Svg
+namespace Svg.Painting
 {
     /// <summary>Indicates what happens if the gradient starts or ends inside the bounds of the target rectangle.</summary>
     /// <remarks>

@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using Svg;
 using System.Drawing.Drawing2D;
 using System.Drawing;
+using Svg.Painting;
+using Svg.Rendering;
 
 namespace SVGViewer
 {
-    class DebugRenderer : ISvgRenderer
+    internal class DebugRenderer : ISvgRenderer
     {
         private Region _clip = new Region();
         private Matrix _transform = new Matrix();

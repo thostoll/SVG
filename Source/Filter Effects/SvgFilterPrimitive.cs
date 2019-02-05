@@ -1,10 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-
-namespace Svg.FilterEffects
+namespace Svg.Filter_Effects
 {
     public abstract class SvgFilterPrimitive : SvgElement
     {

@@ -19,10 +19,10 @@
 // 
 #endregion
 
-namespace Fizzler
-{
-    using System;
+using System;
 
+namespace Svg.External.Fizzler
+{
     /// <summary>
     /// Represent a type or attribute name.
     /// </summary>

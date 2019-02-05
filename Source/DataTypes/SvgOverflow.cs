@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
+﻿using System.ComponentModel;
+using Svg.Painting;
 
-namespace Svg
+namespace Svg.DataTypes
 {
     /// <summary>The ‘overflow’ property applies to elements that establish new viewports (e.g., ‘svg’ elements), ‘pattern’ elements and ‘marker’ elements. For all other elements, the property has no effect (i.e., a clipping rectangle is not created).</summary>
     /// <remarks>

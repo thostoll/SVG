@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Text;
-using Svg.ExCSS.Model;
+using Svg.External.ExCSS.Model.Values;
 
 // ReSharper disable once CheckNamespace
 namespace Svg.ExCSS

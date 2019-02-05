@@ -1,14 +1,16 @@
 ﻿
-namespace Svg.ExCSS.Model.TextBlocks
+using Svg.ExCSS;
+
+namespace Svg.External.ExCSS.Model.TextBlocks
 {
     internal class BracketBlock : Block
     {
-        private readonly static BracketBlock RoundOpen= new BracketBlock { GrammarSegment = GrammarSegment.ParenOpen, _mirror = GrammarSegment.ParenClose };
-        private readonly static BracketBlock RoundClose = new BracketBlock { GrammarSegment = GrammarSegment.ParenClose, _mirror = GrammarSegment.ParenOpen };
-        private readonly static BracketBlock CurlyOpen = new BracketBlock { GrammarSegment = GrammarSegment.CurlyBraceOpen, _mirror = GrammarSegment.CurlyBracketClose };
-        private readonly static BracketBlock CurlyClose = new BracketBlock { GrammarSegment = GrammarSegment.CurlyBracketClose, _mirror = GrammarSegment.CurlyBraceOpen };
-        private readonly static BracketBlock SquareOpen = new BracketBlock { GrammarSegment = GrammarSegment.SquareBraceOpen, _mirror = GrammarSegment.SquareBracketClose };
-        private readonly static BracketBlock SquareClose = new BracketBlock { GrammarSegment = GrammarSegment.SquareBracketClose, _mirror = GrammarSegment.SquareBraceOpen };
+        private static readonly BracketBlock RoundOpen= new BracketBlock { GrammarSegment = GrammarSegment.ParenOpen, _mirror = GrammarSegment.ParenClose };
+        private static readonly BracketBlock RoundClose = new BracketBlock { GrammarSegment = GrammarSegment.ParenClose, _mirror = GrammarSegment.ParenOpen };
+        private static readonly BracketBlock CurlyOpen = new BracketBlock { GrammarSegment = GrammarSegment.CurlyBraceOpen, _mirror = GrammarSegment.CurlyBracketClose };
+        private static readonly BracketBlock CurlyClose = new BracketBlock { GrammarSegment = GrammarSegment.CurlyBracketClose, _mirror = GrammarSegment.CurlyBraceOpen };
+        private static readonly BracketBlock SquareOpen = new BracketBlock { GrammarSegment = GrammarSegment.SquareBraceOpen, _mirror = GrammarSegment.SquareBracketClose };
+        private static readonly BracketBlock SquareClose = new BracketBlock { GrammarSegment = GrammarSegment.SquareBracketClose, _mirror = GrammarSegment.SquareBraceOpen };
 
         private GrammarSegment _mirror;
 

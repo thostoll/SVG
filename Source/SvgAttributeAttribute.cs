@@ -1,16 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.ComponentModel;
 
 namespace Svg
 {
+    /// <inheritdoc />
     /// <summary>
     /// Specifies the SVG attribute name of the associated property.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property|AttributeTargets.Event)]
-    public class SvgAttributeAttribute : System.Attribute
+    public class SvgAttributeAttribute : Attribute
     {
 		/// <summary>
 		/// Gets a <see cref="string"/> containing the XLink namespace (http://www.w3.org/1999/xlink).
@@ -26,9 +25,9 @@ namespace Svg
 																				new KeyValuePair<string, string>(XLinkPrefix, XLinkNamespace),
 																				new KeyValuePair<string, string>("xml", XmlNamespace)
 		                                                                    };
-        private bool _inAttrDictionary;
-        private string _name;
-        private string _namespace;
+        private readonly bool _inAttrDictionary;
+        private readonly string _name;
+        private readonly string _namespace;
 
         public override bool Equals(object obj)
         {
@@ -58,7 +57,7 @@ namespace Svg
             if (indicator.Name == String.Empty)
                 return false;
 
-            return String.Compare(indicator.Name, this.Name) == 0;
+            return string.CompareOrdinal(indicator.Name, Name) == 0;
         }
 
 		/// <summary>
@@ -80,7 +79,7 @@ namespace Svg
         /// </summary>
         public string Name
         {
-            get { return this._name; }
+            get { return _name; }
         }
 
         /// <summary>
@@ -88,12 +87,12 @@ namespace Svg
         /// </summary>
         public string NameSpace
         {
-            get { return this._namespace; }
+            get { return _namespace; }
         }
 
         public bool InAttributeDictionary
         {
-            get { return this._inAttrDictionary; }
+            get { return _inAttrDictionary; }
         }
 
         /// <summary>
@@ -101,7 +100,7 @@ namespace Svg
         /// </summary>
         internal SvgAttributeAttribute()
         {
-            this._name = String.Empty;
+            _name = String.Empty;
         }
 
         /// <summary>
@@ -110,15 +109,15 @@ namespace Svg
         /// <param name="name">The name of the SVG attribute.</param>
         internal SvgAttributeAttribute(string name)
         {
-            this._name = name;
-            this._namespace = SvgNamespace;
+            _name = name;
+            _namespace = SvgNamespace;
         }
 
         internal SvgAttributeAttribute(string name, bool inAttrDictionary)
         {
-            this._name = name;
-            this._namespace = SvgNamespace;
-            this._inAttrDictionary = inAttrDictionary;
+            _name = name;
+            _namespace = SvgNamespace;
+            _inAttrDictionary = inAttrDictionary;
         }
 
         /// <summary>
@@ -128,8 +127,8 @@ namespace Svg
         /// <param name="nameSpace">The namespace of the SVG attribute (e.g. http://www.w3.org/2000/svg).</param>
         public SvgAttributeAttribute(string name, string nameSpace)
         {
-            this._name = name;
-            this._namespace = nameSpace;
+            _name = name;
+            _namespace = nameSpace;
         }
     }
 }

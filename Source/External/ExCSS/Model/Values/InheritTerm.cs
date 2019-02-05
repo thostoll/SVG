@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Svg.ExCSS;
 
-namespace Svg.ExCSS
+namespace Svg.External.ExCSS.Model.Values
 {
     public class InheritTerm : Term
     {

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Svg
+﻿namespace Svg.Text
 {
     public abstract class SvgKern : SvgElement
     {

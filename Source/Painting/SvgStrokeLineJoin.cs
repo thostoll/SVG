@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.ComponentModel;
 
-namespace Svg
+namespace Svg.Painting
 {
     /// <summary>Specifies the shape to be used at the corners of paths or basic shapes when they are stroked.</summary>
     [TypeConverter(typeof(SvgStrokeLineJoinConverter))]

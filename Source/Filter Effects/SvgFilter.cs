@@ -1,13 +1,12 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
+using System.Linq;
 using Svg.DataTypes;
+using Svg.Rendering;
 
-namespace Svg.FilterEffects
+namespace Svg.Filter_Effects
 {
     /// <summary>
     /// A filter effect consists of a series of graphics operations that are applied to a given source graphic to produce a modified graphical result.
@@ -99,7 +98,7 @@ namespace Svg.FilterEffects
             return (SvgFilter)this.MemberwiseClone();
         }
 
-        private Matrix GetTransform(SvgVisualElement element)
+        private Matrix GetTransform(Basic_Shapes.SvgVisualElement element)
         {
             var transformMatrix = new Matrix();
             foreach (var transformation in element.Transforms)
@@ -109,7 +108,7 @@ namespace Svg.FilterEffects
             return transformMatrix;
         }
 
-        private RectangleF GetPathBounds(SvgVisualElement element, ISvgRenderer renderer, Matrix transform)
+        private RectangleF GetPathBounds(Basic_Shapes.SvgVisualElement element, ISvgRenderer renderer, Matrix transform)
         {
             var bounds = element.Path(renderer).GetBounds();
             var pts = new PointF[] { bounds.Location, new PointF(bounds.Right, bounds.Bottom) };
@@ -119,7 +118,7 @@ namespace Svg.FilterEffects
                                   Math.Abs(pts[0].X - pts[1].X), Math.Abs(pts[0].Y - pts[1].Y));
         }
 
-        public void ApplyFilter(SvgVisualElement element, ISvgRenderer renderer, Action<ISvgRenderer> renderMethod)
+        public void ApplyFilter(Basic_Shapes.SvgVisualElement element, ISvgRenderer renderer, Action<ISvgRenderer> renderMethod)
         {
             var inflate = 0.5f;
             var transform = GetTransform(element);

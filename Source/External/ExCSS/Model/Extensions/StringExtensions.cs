@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace Svg.ExCSS.Model.Extensions
+namespace Svg.External.ExCSS.Model.Extensions
 {
     public static class StringExtensions
     {

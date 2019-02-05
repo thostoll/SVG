@@ -1,8 +1,7 @@
-using System;
 using System.Drawing;
-using System.Collections.Generic;
+using Svg.DataTypes;
 
-namespace Svg.FilterEffects
+namespace Svg.Filter_Effects.feOffset
 {
 	/// <summary>
 	/// Note: this is not used in calculations to bitmap - used only to allow for svg xml output

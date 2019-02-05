@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 
-namespace Svg.Pathing
+namespace Svg.Paths
 {
     public sealed class SvgQuadraticCurveSegment : SvgPathSegment
     {

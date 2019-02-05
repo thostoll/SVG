@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
+using Svg.Rendering;
 
-namespace Svg
+namespace Svg.Painting
 {
     /// <summary>
     /// A wrapper for a paint server has a fallback if the primary server doesn't work.
@@ -21,7 +20,7 @@ namespace Svg
             _primary = primary;
         }
 
-        public override Brush GetBrush(SvgVisualElement styleOwner, ISvgRenderer renderer, float opacity, bool forStroke = false)
+        public override Brush GetBrush(Basic_Shapes.SvgVisualElement styleOwner, ISvgRenderer renderer, float opacity, bool forStroke = false)
         {
             try
             {

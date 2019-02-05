@@ -5,12 +5,9 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 
-using Svg.Pathing;
-
-namespace Svg
+namespace Svg.Paths
 {
     public static class PointFExtensions
     {

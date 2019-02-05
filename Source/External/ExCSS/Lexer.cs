@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
-using Svg.ExCSS.Model;
-using Svg.ExCSS.Model.TextBlocks;
+using Svg.External.ExCSS;
+using Svg.External.ExCSS.Model;
+using Svg.External.ExCSS.Model.TextBlocks;
 
 // ReSharper disable once CheckNamespace
 namespace Svg.ExCSS

@@ -1,14 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
-using System.Reflection;
 using System.ComponentModel;
-using Svg.DataTypes;
-using System.Text.RegularExpressions;
-using System.Linq;
+using Svg.Painting;
 
-namespace Svg
+namespace Svg.Basic_Shapes
 {
     public abstract partial class SvgVisualElement
     {
@@ -19,8 +12,8 @@ namespace Svg
         [SvgAttribute("visibility")]
         public virtual bool Visible
         {
-            get { return (this.Attributes["visibility"] == null) ? true : (bool)this.Attributes["visibility"]; }
-            set { this.Attributes["visibility"] = value; }
+            get => (bool?) Attributes["visibility"] ?? true;
+            set => Attributes["visibility"] = value;
         }
 
         /// <summary>
@@ -30,8 +23,8 @@ namespace Svg
         [SvgAttribute("display")]
         public virtual string Display
         {
-            get { return this.Attributes["display"] as string; }
-            set { this.Attributes["display"] = value; }
+            get => Attributes["display"] as string;
+            set => Attributes["display"] = value;
         }
 
         // Displayable - false if attribute display="none", true otherwise
@@ -39,7 +32,7 @@ namespace Svg
         {
             get
             {
-                string checkForDisplayNone = this.Attributes["display"] as string;
+                string checkForDisplayNone = Attributes["display"] as string;
                 if ((!string.IsNullOrEmpty(checkForDisplayNone)) && (checkForDisplayNone == "none"))
                     return false;
                 else
@@ -53,8 +46,8 @@ namespace Svg
         [SvgAttribute("enable-background")]
         public virtual string EnableBackground
         {
-            get { return this.Attributes["enable-background"] as string; }
-            set { this.Attributes["enable-background"] = value; }
+            get => Attributes["enable-background"] as string;
+            set => Attributes["enable-background"] = value;
         }
 
     }

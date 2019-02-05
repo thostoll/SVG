@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using Svg.ExCSS.Model;
 
-namespace Svg.ExCSS.Model.Extensions
+namespace Svg.External.ExCSS.Model.Extensions
 {
-    static class CharacterExtensions
+    internal static class CharacterExtensions
     {
         public static int FromHex(this char character)
         {

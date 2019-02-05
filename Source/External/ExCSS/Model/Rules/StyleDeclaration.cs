@@ -163,7 +163,7 @@ namespace Svg.ExCSS
                 return;
             }
 
-            var rules = Parser.ParseDeclarations(value ?? string.Empty).Properties;
+            var rules = External.ExCSS.Parser.ParseDeclarations(value ?? string.Empty).Properties;
 
             _properties.Clear();
             _properties.AddRange(rules);

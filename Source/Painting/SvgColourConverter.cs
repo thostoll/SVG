@@ -1,12 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Threading;
+using Svg.Exceptions;
 
-namespace Svg
+namespace Svg.Painting
 {
     /// <summary>
     /// Converts string representations of colours into <see cref="Color"/> objects.

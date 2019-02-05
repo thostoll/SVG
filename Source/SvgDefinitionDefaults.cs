@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Svg
 {
@@ -11,36 +8,36 @@ namespace Svg
     public static class SvgDefaults
     {
         //internal dictionary for the defaults
-        private static readonly Dictionary<string, string> _defaults = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> Defaults = new Dictionary<string, string>();
 
         static SvgDefaults()
         {
-            _defaults["d"] = "";
+            Defaults["d"] = "";
 
-            _defaults["viewBox"] = "0, 0, 0, 0";
+            Defaults["viewBox"] = "0, 0, 0, 0";
 
-            _defaults["visibility"] = "visible";
-            _defaults["opacity"] = "1";
-            _defaults["clip-rule"] = "nonzero";
+            Defaults["visibility"] = "visible";
+            Defaults["opacity"] = "1";
+            Defaults["clip-rule"] = "nonzero";
 
-            _defaults["transform"] = "";
-            _defaults["rx"] = "0";
-            _defaults["ry"] = "0";
-            _defaults["cx"] = "0";
-            _defaults["cy"] = "0";
+            Defaults["transform"] = "";
+            Defaults["rx"] = "0";
+            Defaults["ry"] = "0";
+            Defaults["cx"] = "0";
+            Defaults["cy"] = "0";
 
-            _defaults["fill"] = "";
-            _defaults["fill-opacity"] = "1";
-            _defaults["fill-rule"] = "nonzero";
+            Defaults["fill"] = "";
+            Defaults["fill-opacity"] = "1";
+            Defaults["fill-rule"] = "nonzero";
 
-            _defaults["stroke"] = "none";
-            _defaults["stroke-opacity"] = "1";
-            _defaults["stroke-width"] = "1";
-            _defaults["stroke-miterlimit"] = "4";
-            _defaults["stroke-linecap"] = "butt";
-            _defaults["stroke-linejoin"] = "miter";
-            _defaults["stroke-dasharray"] = "none";
-            _defaults["stroke-dashoffset"] = "0";
+            Defaults["stroke"] = "none";
+            Defaults["stroke-opacity"] = "1";
+            Defaults["stroke-width"] = "1";
+            Defaults["stroke-miterlimit"] = "4";
+            Defaults["stroke-linecap"] = "butt";
+            Defaults["stroke-linejoin"] = "miter";
+            Defaults["stroke-dasharray"] = "none";
+            Defaults["stroke-dashoffset"] = "0";
         }
 
         /// <summary>
@@ -50,11 +47,8 @@ namespace Svg
         /// <param name="value">.NET value of the attribute</param>
         public static bool IsDefault(string attributeName, string value)
         {
-            if (_defaults.ContainsKey(attributeName))
-            {
-                if (_defaults[attributeName] == value) return true;
-            }
-            return false;
+            if (!Defaults.ContainsKey(attributeName)) return false;
+            return Defaults[attributeName] == value;
         }
     }
 }

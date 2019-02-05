@@ -1,8 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Svg.Rendering;
 
-namespace Svg
+namespace Svg.Document_Structure
 {
     /// <summary>
     /// Represents a list of re-usable SVG components.

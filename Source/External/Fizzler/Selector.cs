@@ -19,10 +19,10 @@
 // 
 #endregion
 
-namespace Fizzler
-{
-    using System.Collections.Generic;
+using System.Collections.Generic;
 
+namespace Svg.External.Fizzler
+{
     /// <summary>
     /// Represents a selector implementation over an arbitrary type of elements.
     /// </summary>

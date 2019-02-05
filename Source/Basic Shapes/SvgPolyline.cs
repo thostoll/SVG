@@ -1,9 +1,11 @@
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Diagnostics;
+using Svg.DataTypes;
+using Svg.Rendering;
 
-namespace Svg
+namespace Svg.Basic_Shapes
 {
     /// <summary>
     /// SvgPolyline defines a set of connected straight line segments. Typically, <see cref="SvgPolyline"/> defines open shapes.
@@ -14,7 +16,7 @@ namespace Svg
         private GraphicsPath _Path;
         public override GraphicsPath Path(ISvgRenderer renderer)
         {
-            if ((_Path == null || this.IsPathDirty) && base.StrokeWidth > 0)
+            if ((_Path == null || IsPathDirty) && base.StrokeWidth > 0)
             {
                 _Path = new GraphicsPath();
 
@@ -48,7 +50,7 @@ namespace Svg
                     Trace.TraceError("Error rendering points: " + exc.Message);
                 }
                 if (renderer != null)
-                  this.IsPathDirty = false;
+                  IsPathDirty = false;
             }
             return _Path;
         }

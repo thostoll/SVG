@@ -1,21 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
+using System;
 using System.Text;
 using System.Windows.Forms;
 using Svg;
-using Svg.Transforms;
-using System.Xml;
 using System.IO;
 
 namespace SVGViewer
 {
-    public partial class SVGViewer : Form
+    public partial class SvgViewer : Form
     {
-        public SVGViewer()
+        public SvgViewer()
         {
             InitializeComponent();
         }
@@ -24,14 +17,13 @@ namespace SVGViewer
         {
             try
             {
-                if (openSvgFile.ShowDialog() == DialogResult.OK)
-                {
-                    SvgDocument svgDoc = SvgDocument.Open(openSvgFile.FileName);
-                    RenderSvg(svgDoc);
-                }
+                if (openSvgFile.ShowDialog() != DialogResult.OK) return;
+                var svgDoc = SvgDocument.Open(openSvgFile.FileName);
+                RenderSvg(svgDoc);
             }
             catch
             {
+                // ignored
             }
         }
 
@@ -42,11 +34,13 @@ namespace SVGViewer
                 using (var s = new MemoryStream(Encoding.UTF8.GetBytes(textBox1.Text)))
                 {
                     SvgDocument svgDoc = SvgDocument.Open<SvgDocument>(s, null);
+        
                     RenderSvg(svgDoc);
                 }
             }
             catch
             {
+                // ignored
             }
         }
 
@@ -56,11 +50,12 @@ namespace SVGViewer
             {
                 if (e.Control && e.KeyCode == Keys.A)
                 {
-                    (sender as TextBox).SelectAll();
+                    (sender as TextBox)?.SelectAll();
                 }
             }
             catch
             {
+                // ignored
             }
         }
 
@@ -72,11 +67,12 @@ namespace SVGViewer
 
             string outputDir;
             if (svgDoc.BaseUri == null)
-                outputDir = System.IO.Path.GetDirectoryName(Application.ExecutablePath); 
+                outputDir = Path.GetDirectoryName(Application.ExecutablePath); 
             else
-                outputDir = System.IO.Path.GetDirectoryName(svgDoc.BaseUri.LocalPath);
-            svgImage.Image.Save(System.IO.Path.Combine(outputDir, "output.png"));
+                outputDir = Path.GetDirectoryName(svgDoc.BaseUri.LocalPath);
+            svgImage.Image.Save(Path.Combine(outputDir ?? throw new InvalidOperationException(), "output.png"));
             // svgDoc.Write(System.IO.Path.Combine(outputDir, "output.svg"));
         }
+
     }
 }

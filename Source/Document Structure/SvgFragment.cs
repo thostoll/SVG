@@ -2,8 +2,11 @@ using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Xml;
+using Svg.DataTypes;
+using Svg.Painting;
+using Svg.Rendering;
 
-namespace Svg
+namespace Svg.Document_Structure
 {
     /// <summary>
     /// An <see cref="SvgFragment"/> represents an SVG fragment that can be the root element or an embedded fragment of an SVG document.
@@ -16,29 +19,11 @@ namespace Svg
         /// </summary>
         public static readonly Uri Namespace = new Uri("http://www.w3.org/2000/svg");
 
-        PointF ISvgBoundable.Location
-        {
-            get
-            {
-                return PointF.Empty;
-            }
-        }
+        PointF ISvgBoundable.Location => PointF.Empty;
 
-        SizeF ISvgBoundable.Size
-        {
-            get
-            {
-                return GetDimensions();
-            }
-        }
+        SizeF ISvgBoundable.Size => GetDimensions();
 
-        RectangleF ISvgBoundable.Bounds
-        {
-            get
-            {
-                return new RectangleF(((ISvgBoundable)this).Location, ((ISvgBoundable)this).Size);
-            }
-        }
+        RectangleF ISvgBoundable.Bounds => new RectangleF(((ISvgBoundable)this).Location, ((ISvgBoundable)this).Size);
 
         private SvgUnit _x;
         private SvgUnit _y;
@@ -84,8 +69,8 @@ namespace Svg
         [SvgAttribute("width")]
         public SvgUnit Width
         {
-            get { return this.Attributes.GetAttribute<SvgUnit>("width"); }
-            set { this.Attributes["width"] = value; }
+            get => Attributes.GetAttribute<SvgUnit>("width");
+            set => Attributes["width"] = value;
         }
 
         /// <summary>
@@ -95,15 +80,15 @@ namespace Svg
         [SvgAttribute("height")]
         public SvgUnit Height
         {
-            get { return this.Attributes.GetAttribute<SvgUnit>("height"); }
-            set { this.Attributes["height"] = value; }
+            get => Attributes.GetAttribute<SvgUnit>("height");
+            set => Attributes["height"] = value;
         }
 
         [SvgAttribute("overflow")]
         public virtual SvgOverflow Overflow
         {
-            get { return this.Attributes.GetAttribute<SvgOverflow>("overflow"); }
-            set { this.Attributes["overflow"] = value; }
+            get { return Attributes.GetAttribute<SvgOverflow>("overflow"); }
+            set { Attributes["overflow"] = value; }
         }
 
         /// <summary>
@@ -113,8 +98,8 @@ namespace Svg
         [SvgAttribute("viewBox")]
         public SvgViewBox ViewBox
         {
-            get { return this.Attributes.GetAttribute<SvgViewBox>("viewBox"); }
-            set { this.Attributes["viewBox"] = value; }
+            get { return Attributes.GetAttribute<SvgViewBox>("viewBox"); }
+            set { Attributes["viewBox"] = value; }
         }
 
         /// <summary>
@@ -124,8 +109,8 @@ namespace Svg
         [SvgAttribute("preserveAspectRatio")]
         public SvgAspectRatio AspectRatio
         {
-            get { return this.Attributes.GetAttribute<SvgAspectRatio>("preserveAspectRatio"); }
-            set { this.Attributes["preserveAspectRatio"] = value; }
+            get { return Attributes.GetAttribute<SvgAspectRatio>("preserveAspectRatio"); }
+            set { Attributes["preserveAspectRatio"] = value; }
         }
 
         /// <summary>
@@ -134,8 +119,8 @@ namespace Svg
         [SvgAttribute("font-size")]
         public override SvgUnit FontSize
         {
-            get { return (this.Attributes["font-size"] == null) ? SvgUnit.Empty : (SvgUnit)this.Attributes["font-size"]; }
-            set { this.Attributes["font-size"] = value; }
+            get { return (Attributes["font-size"] == null) ? SvgUnit.Empty : (SvgUnit)Attributes["font-size"]; }
+            set { Attributes["font-size"] = value; }
         }
 
         /// <summary>
@@ -144,8 +129,8 @@ namespace Svg
         [SvgAttribute("font-family")]
         public override string FontFamily
         {
-            get { return this.Attributes["font-family"] as string; }
-            set { this.Attributes["font-family"] = value; }
+            get { return Attributes["font-family"] as string; }
+            set { Attributes["font-family"] = value; }
         }
 
         /// <summary>
@@ -155,13 +140,13 @@ namespace Svg
         protected internal override bool PushTransforms(ISvgRenderer renderer)
         {
             if (!base.PushTransforms(renderer)) return false;
-            this.ViewBox.AddViewBoxTransform(this.AspectRatio, renderer, this);
+            ViewBox.AddViewBoxTransform(AspectRatio, renderer, this);
             return true;
         }
 
         protected override void Render(ISvgRenderer renderer)
         {
-            switch (this.Overflow)
+            switch (Overflow)
             {
                 case SvgOverflow.Auto:
                 case SvgOverflow.Visible:
@@ -172,9 +157,9 @@ namespace Svg
                     var prevClip = renderer.GetClip();
                     try
                     {
-                        var size = (this.Parent == null ? renderer.GetBoundable().Bounds.Size : GetDimensions());
-                        var clip = new RectangleF(this.X.ToDeviceValue(renderer, UnitRenderingType.Horizontal, this),
-                                                  this.Y.ToDeviceValue(renderer, UnitRenderingType.Vertical, this),
+                        var size = (Parent == null ? renderer.GetBoundable().Bounds.Size : GetDimensions());
+                        var clip = new RectangleF(X.ToDeviceValue(renderer, UnitRenderingType.Horizontal, this),
+                                                  Y.ToDeviceValue(renderer, UnitRenderingType.Vertical, this),
                                                   size.Width, size.Height);
                         renderer.SetClip(new Region(clip), CombineMode.Intersect);
                         base.Render(renderer);
@@ -212,7 +197,7 @@ namespace Svg
             get
             {
                 var bounds = new RectangleF();
-                foreach (var child in this.Children)
+                foreach (var child in Children)
                 {
                     RectangleF childBounds = new RectangleF();
                     if (child is SvgFragment)
@@ -220,9 +205,9 @@ namespace Svg
                         childBounds = ((SvgFragment)child).Bounds;
                         childBounds.Offset(((SvgFragment)child).X, ((SvgFragment)child).Y);
                     }
-                    else if (child is SvgVisualElement)
+                    else if (child is Basic_Shapes.SvgVisualElement)
                     {
-                        childBounds = ((SvgVisualElement)child).Bounds;
+                        childBounds = ((Basic_Shapes.SvgVisualElement)child).Bounds;
                     }
 
                     if (!childBounds.IsEmpty)
@@ -249,10 +234,10 @@ namespace Svg
         {
             _x = 0.0f;
             _y = 0.0f;
-            this.Height = new SvgUnit(SvgUnitType.Percentage, 100.0f);
-            this.Width = new SvgUnit(SvgUnitType.Percentage, 100.0f);
-            this.ViewBox = SvgViewBox.Empty;
-            this.AspectRatio = new SvgAspectRatio(SvgPreserveAspectRatio.xMidYMid);
+            Height = new SvgUnit(SvgUnitType.Percentage, 100.0f);
+            Width = new SvgUnit(SvgUnitType.Percentage, 100.0f);
+            ViewBox = SvgViewBox.Empty;
+            AspectRatio = new SvgAspectRatio(SvgPreserveAspectRatio.xMidYMid);
         }
 
         public SizeF GetDimensions()
@@ -270,7 +255,7 @@ namespace Svg
                 }
                 else
                 {
-                    bounds = this.Bounds; //do just one call to the recursive bounds property
+                    bounds = Bounds; //do just one call to the recursive bounds property
                 }
             }
 
@@ -302,11 +287,11 @@ namespace Svg
         public override SvgElement DeepCopy<T>()
         {
             var newObj = base.DeepCopy<T>() as SvgFragment;
-            newObj.Height = this.Height;
-            newObj.Width = this.Width;
-            newObj.Overflow = this.Overflow;
-            newObj.ViewBox = this.ViewBox;
-            newObj.AspectRatio = this.AspectRatio;
+            newObj.Height = Height;
+            newObj.Width = Width;
+            newObj.Overflow = Overflow;
+            newObj.ViewBox = ViewBox;
+            newObj.AspectRatio = AspectRatio;
             return newObj;
         }
 

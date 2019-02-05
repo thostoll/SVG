@@ -1,11 +1,9 @@
 using System;
 using System.ComponentModel;
-using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
-using System.Drawing.Drawing2D;
+using Svg.Rendering;
 
-namespace Svg
+namespace Svg.Painting
 {
     /// <summary>
     /// Represents the base class for all paint servers that are intended to be used as a fill or stroke.
@@ -39,11 +37,11 @@ namespace Svg
         /// <summary>
         /// Gets a <see cref="Brush"/> representing the current paint server.
         /// </summary>
-        /// <param name="styleOwner">The owner <see cref="SvgVisualElement"/>.</param>
+        /// <param name="styleOwner">The owner <see cref="Basic_Shapes.SvgVisualElement"/>.</param>
         /// <param name="renderer">The renderer object.</param>
         /// <param name="opacity">The opacity of the brush.</param>
         /// <param name="forStroke">Not used.</param>
-        public abstract Brush GetBrush(SvgVisualElement styleOwner, ISvgRenderer renderer, float opacity, bool forStroke = false);
+        public abstract Brush GetBrush(Basic_Shapes.SvgVisualElement styleOwner, ISvgRenderer renderer, float opacity, bool forStroke = false);
 
         /// <summary>
         /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
@@ -53,7 +51,7 @@ namespace Svg
         /// </returns>
         public override string ToString()
         {
-            return String.Format("url(#{0})", this.ID);
+            return String.Format("url(#{0})", this.Id);
         }
 
 

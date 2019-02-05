@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ComponentModel;
+﻿using System.ComponentModel;
+using Svg.Painting;
 
-namespace Svg
+namespace Svg.DataTypes
 {
     //TODO Need to split this enum into separate inherited enums for GradientCoordinateUnits, ClipPathCoordinateUnits, etc. as each should have its own converter since they have different defaults.
     /// <summary>

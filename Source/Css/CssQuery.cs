@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Fizzler;
 using Svg.ExCSS;
+using Svg.External.Fizzler;
 
 namespace Svg.Css
 {
@@ -12,7 +10,7 @@ namespace Svg.Css
         public static IEnumerable<SvgElement> QuerySelectorAll(this SvgElement elem, string selector, SvgElementFactory elementFactory)
         {
             var generator = new SelectorGenerator<SvgElement>(new SvgElementOps(elementFactory));
-            Fizzler.Parser.Parse(selector, generator);
+            Parser.Parse(selector, generator);
             return generator.Selector(Enumerable.Repeat(elem, 1));
         }
 

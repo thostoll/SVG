@@ -1,11 +1,12 @@
 using System;
-using System.Diagnostics;
-using System.Drawing;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
+using Svg.DataTypes;
+using Svg.Rendering;
 
-namespace Svg
+namespace Svg.Painting
 {
     [SvgElement("radialGradient")]
     public sealed class SvgRadialGradientServer : SvgGradientServer
@@ -105,7 +106,7 @@ namespace Svg
                     orig);
         }
 
-        public override Brush GetBrush(SvgVisualElement renderingElement, ISvgRenderer renderer, float opacity, bool forStroke = false)
+        public override Brush GetBrush(Basic_Shapes.SvgVisualElement renderingElement, ISvgRenderer renderer, float opacity, bool forStroke = false)
         {
             LoadStops(renderingElement);
 

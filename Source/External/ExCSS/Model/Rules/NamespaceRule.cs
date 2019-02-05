@@ -1,4 +1,5 @@
-﻿using Svg.ExCSS.Model.Extensions;
+﻿using Svg.External.ExCSS.Model.Extensions;
+
 // ReSharper disable once CheckNamespace
 
 

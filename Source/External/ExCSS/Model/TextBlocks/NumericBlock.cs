@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Globalization;
+using Svg.ExCSS;
 
-namespace Svg.ExCSS.Model.TextBlocks
+namespace Svg.External.ExCSS.Model.TextBlocks
 {
     internal class NumericBlock : Block
     {

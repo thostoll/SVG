@@ -1,7 +1,6 @@
-﻿using Svg.DataTypes;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
-namespace Svg
+namespace Svg.DataTypes
 {
 	/// <summary>
 	/// Description of SvgAspectRatio.

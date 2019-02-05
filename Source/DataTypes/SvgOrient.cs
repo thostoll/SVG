@@ -1,8 +1,6 @@
-using Svg.DataTypes;
 using System.ComponentModel;
-using System;
 
-namespace Svg
+namespace Svg.DataTypes
 {
     /// <summary>
     /// Represents an orientation in an Scalable Vector Graphics document.
@@ -98,7 +96,7 @@ namespace Svg
 		//}
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="System.Single"/> to <see cref="Svg.SvgOrient"/>.
+        /// Performs an implicit conversion from <see cref="System.Single"/> to <see cref="SvgOrient"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>

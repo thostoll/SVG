@@ -1,9 +1,12 @@
-﻿using Svg.DataTypes;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Globalization;
+using Svg.Clipping_and_Masking;
+using Svg.DataTypes;
+using Svg.Rendering;
+using Svg.Text;
 
-namespace Svg
+namespace Svg.Painting
 {
     //just overrrides canconvert and returns true
     public class BaseConverter : TypeConverter

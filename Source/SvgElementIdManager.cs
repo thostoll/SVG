@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Net;
 using System.IO;
+using Svg.Exceptions;
 
 namespace Svg
 {
@@ -94,17 +95,17 @@ namespace Svg
         public virtual bool AddAndForceUniqueID(SvgElement element, SvgElement sibling, bool autoForceUniqueID = true, Action<SvgElement, string, string> logElementOldIDNewID = null)
         {
             var result = false;
-            if (!string.IsNullOrEmpty(element.ID))
+            if (!string.IsNullOrEmpty(element.Id))
             {
-                var newID = this.EnsureValidId(element.ID, autoForceUniqueID);
-                if (autoForceUniqueID && newID != element.ID)
+                var newID = this.EnsureValidId(element.Id, autoForceUniqueID);
+                if (autoForceUniqueID && newID != element.Id)
                 {
                     if(logElementOldIDNewID != null)
-                        logElementOldIDNewID(element, element.ID, newID);
-                    element.ForceUniqueID(newID);
+                        logElementOldIDNewID(element, element.Id, newID);
+                    element.ForceUniqueId(newID);
                     result = true;
                 }
-                this._idValueMap.Add(element.ID, element);
+                this._idValueMap.Add(element.Id, element);
             }
             
             OnAdded(element);
@@ -117,9 +118,9 @@ namespace Svg
         /// <param name="element">The <see cref="SvgElement"/> to be removed from ID management.</param>
         public virtual void Remove(SvgElement element)
         {
-            if (!string.IsNullOrEmpty(element.ID))
+            if (!string.IsNullOrEmpty(element.Id))
             {
-                this._idValueMap.Remove(element.ID);
+                this._idValueMap.Remove(element.Id);
             }
             
             OnRemoved(element);

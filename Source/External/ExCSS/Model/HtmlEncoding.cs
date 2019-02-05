@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Text;
+using Svg.ExCSS.Model;
 
-namespace Svg.ExCSS.Model
+namespace Svg.External.ExCSS.Model
 {
     internal static class HtmlEncoding
     {

@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
+﻿using System.ComponentModel;
+using Svg.Painting;
 
-namespace Svg
+namespace Svg.DataTypes
 {
     /// <summary>Indicates how the user agent should determine the spacing between glyphs that are to be rendered along a path.</summary>
     [TypeConverter(typeof(SvgTextPathSpacingConverter))]

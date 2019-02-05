@@ -1,9 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
+using Svg.Rendering;
 
-namespace Svg
+namespace Svg.Painting
 {
     public sealed class SvgColourServer : SvgPaintServer
     {
@@ -35,7 +34,7 @@ namespace Svg
             set { this._colour = value; }
         }
 
-        public override Brush GetBrush(SvgVisualElement styleOwner, ISvgRenderer renderer, float opacity, bool forStroke = false)
+        public override Brush GetBrush(Basic_Shapes.SvgVisualElement styleOwner, ISvgRenderer renderer, float opacity, bool forStroke = false)
         {
             //is none?
             if (this == SvgPaintServer.None) return new SolidBrush(System.Drawing.Color.Transparent);

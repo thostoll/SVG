@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
 using System.Drawing.Drawing2D;
 
 namespace Svg.Transforms
@@ -16,16 +13,16 @@ namespace Svg.Transforms
     	#region Equals implementation
     	public override bool Equals(object obj)
 		{
-			SvgTransform other = obj as SvgTransform;
+			var other = obj as SvgTransform;
 			if (other == null)
 				return false;
 			
-			var thisMatrix = this.Matrix.Elements;
+			var thisMatrix = Matrix.Elements;
 			var otherMatrix = other.Matrix.Elements;
 			
-			for (int i = 0; i < 6; i++) 
+			for (var i = 0; i < 6; i++) 
 			{
-				if(thisMatrix[i] != otherMatrix[i])
+				if(Math.Abs(thisMatrix[i] - otherMatrix[i]) > 0.01)
 					return false;
 			}
 			
@@ -34,7 +31,7 @@ namespace Svg.Transforms
     	
     	public override int GetHashCode()
 		{
-    		int hashCode = this.Matrix.GetHashCode();
+    		var hashCode = Matrix.GetHashCode();
 			return hashCode;
 		}
 

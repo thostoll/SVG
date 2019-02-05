@@ -1,12 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
-using System.Drawing.Drawing2D;
+using Svg.Rendering;
 
-using Svg.Transforms;
-
-namespace Svg
+namespace Svg.Transforms
 {
     /// <summary>
     /// Represents and element that may be transformed.

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using Svg.ExCSS;
 
-namespace Svg.ExCSS.Model
+namespace Svg.External.ExCSS.Model
 {
     interface ISupportsRuleSets
     {

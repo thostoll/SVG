@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
-using System.Reflection;
 using System.ComponentModel;
-using Svg.DataTypes;
-using System.Text.RegularExpressions;
 using System.Linq;
+using Svg.DataTypes;
+using Svg.Painting;
+using Svg.Rendering;
+using Svg.Text;
+using FontFamily = System.Drawing.FontFamily;
 
 namespace Svg
 {

@@ -9,7 +9,7 @@ namespace Svg
 
         public SvgUnknownElement(string elementName)
         {
-            this.ElementName = elementName;
+            ElementName = elementName;
         }
 
         public override SvgElement DeepCopy()

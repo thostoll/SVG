@@ -1,10 +1,12 @@
 using System;
 using System.ComponentModel;
+using System.Drawing;
 using System.Globalization;
 using System.Linq;
-using System.Drawing;
+using Svg.Rendering;
+using Svg.Text;
 
-namespace Svg
+namespace Svg.DataTypes
 {
     /// <summary>
     /// Represents a unit in an Scalable Vector Graphics document.
@@ -12,15 +14,12 @@ namespace Svg
     [TypeConverter(typeof(SvgUnitConverter))]
     public struct SvgUnit
     {
-        private SvgUnitType _type;
-        private float _value;
-        private bool _isEmpty;
         private float? _deviceValue;
 
         /// <summary>
         /// Gets and empty <see cref="SvgUnit"/>.
         /// </summary>
-        public static readonly SvgUnit Empty = new SvgUnit(SvgUnitType.User, 0) { _isEmpty = true };
+        public static readonly SvgUnit Empty = new SvgUnit(SvgUnitType.User, 0) { IsEmpty = true };
 
         /// <summary>
         /// Gets an <see cref="SvgUnit"/> with a value of none.
@@ -30,34 +29,22 @@ namespace Svg
         /// <summary>
         /// Gets a value to determine whether the unit is empty.
         /// </summary>
-        public bool IsEmpty
-        {
-            get { return this._isEmpty; }
-        }
+        public bool IsEmpty { get; private set; }
 
         /// <summary>
         /// Gets whether this unit is none.
         /// </summary>
-        public bool IsNone
-        {
-            get { return _type == SvgUnitType.None; }
-        }
+        public bool IsNone => Type == SvgUnitType.None;
 
         /// <summary>
         /// Gets the value of the unit.
         /// </summary>
-        public float Value
-        {
-            get { return this._value; }
-        }
+        public float Value { get; }
 
         /// <summary>
         /// Gets the <see cref="SvgUnitType"/> of unit.
         /// </summary>
-        public SvgUnitType Type
-        {
-            get { return this._type; }
-        }
+        public SvgUnitType Type { get; }
 
         /// <summary>
         /// Converts the current unit to one that can be used at render time.
@@ -66,25 +53,25 @@ namespace Svg
         public float ToDeviceValue(ISvgRenderer renderer, UnitRenderingType renderType, SvgElement owner)
         {
             // If it's already been calculated
-            if (this._deviceValue.HasValue)
+            if (_deviceValue.HasValue)
             {
-                return this._deviceValue.Value;
+                return _deviceValue.Value;
             }
 
-            if (this._value == 0.0f)
+            if (Value == 0.0f)
             {
-                this._deviceValue = 0.0f;
-                return this._deviceValue.Value;
+                _deviceValue = 0.0f;
+                return _deviceValue.Value;
             }
 
             // http://www.w3.org/TR/CSS21/syndata.html#values
             // http://www.w3.org/TR/SVG11/coords.html#Units
 
             const float cmInInch = 2.54f;
-            int ppi = SvgDocument.PointsPerInch;
+            var ppi = SvgDocument.PointsPerInch;
 
-            var type = this.Type;
-            var value = this.Value;
+            var type = Type;
+            var value = Value;
             
             float points;
 
@@ -148,7 +135,7 @@ namespace Svg
                         break;
                     }
 
-                    System.Drawing.SizeF size = boundable.Bounds.Size;
+                    SizeF size = boundable.Bounds.Size;
 
                     switch (renderType)
                     {
@@ -178,13 +165,13 @@ namespace Svg
                     _deviceValue = value;
                     break;
             }
-            return this._deviceValue.Value;
+            return _deviceValue.Value;
         }
 
         private IFontDefn GetFont(ISvgRenderer renderer, SvgElement owner)
         {
             if (owner == null) return null;
-            var visual = owner.Parents.OfType<SvgVisualElement>().FirstOrDefault();
+            var visual = owner.Parents.OfType<Basic_Shapes.SvgVisualElement>().FirstOrDefault();
             return visual != null ? visual.GetFont(renderer) : null;
         }
 
@@ -194,12 +181,12 @@ namespace Svg
         /// <returns>An <see cref="SvgUnit"/> of type <see cref="SvgUnitType.Percentage"/>.</returns>
         public SvgUnit ToPercentage()
         {
-            switch (this.Type)
+            switch (Type)
             {
                 case SvgUnitType.Percentage:
                     return this;
                 case SvgUnitType.User:
-                    return new SvgUnit(SvgUnitType.Percentage, this.Value * 100);
+                    return new SvgUnit(SvgUnitType.Percentage, Value * 100);
                 default:
                     throw new NotImplementedException();
             }
@@ -209,24 +196,24 @@ namespace Svg
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
-            if (!(obj.GetType() == typeof (SvgUnit))) return false;
+            if (!(obj is SvgUnit)) return false;
 
             var unit = (SvgUnit)obj;
-            return (unit.Value == this.Value && unit.Type == this.Type);
+            return (unit.Value == Value && unit.Type == Type);
         }
         
         public bool Equals(SvgUnit other)
         {
-            return this._type == other._type && (this._value == other._value);
+            return Type == other.Type && (Value == other.Value);
         }
         
         public override int GetHashCode()
         {
             int hashCode = 0;
             unchecked {
-                hashCode += 1000000007 * _type.GetHashCode();
-                hashCode += 1000000009 * _value.GetHashCode();
-                hashCode += 1000000021 * _isEmpty.GetHashCode();
+                hashCode += 1000000007 * Type.GetHashCode();
+                hashCode += 1000000009 * Value.GetHashCode();
+                hashCode += 1000000021 * IsEmpty.GetHashCode();
                 hashCode += 1000000033 * _deviceValue.GetHashCode();
             }
             return hashCode;
@@ -247,7 +234,7 @@ namespace Svg
         {
             string type = string.Empty;
 
-            switch (this.Type)
+            switch (Type)
             {
                 case SvgUnitType.None:
                     return "none";
@@ -274,11 +261,11 @@ namespace Svg
                     break;
             }
 
-            return string.Concat(this.Value.ToString(CultureInfo.InvariantCulture), type);
+            return string.Concat(Value.ToString(CultureInfo.InvariantCulture), type);
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Svg.SvgUnit"/> to <see cref="System.Single"/>.
+        /// Performs an implicit conversion from <see cref="SvgUnit"/> to <see cref="System.Single"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -288,7 +275,7 @@ namespace Svg
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="System.Single"/> to <see cref="Svg.SvgUnit"/>.
+        /// Performs an implicit conversion from <see cref="System.Single"/> to <see cref="SvgUnit"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -304,10 +291,10 @@ namespace Svg
         /// <param name="value">The value.</param>
         public SvgUnit(SvgUnitType type, float value)
         {
-            this._isEmpty = false;
-            this._type = type;
-            this._value = value;
-            this._deviceValue = null;
+            IsEmpty = false;
+            Type = type;
+            Value = value;
+            _deviceValue = null;
         }
 
         /// <summary>
@@ -316,26 +303,26 @@ namespace Svg
         /// <param name="value">The value.</param>
         public SvgUnit(float value)
         {
-            this._isEmpty = false;
-            this._value = value;
-            this._type = SvgUnitType.User;
-            this._deviceValue = null;
+            IsEmpty = false;
+            Value = value;
+            Type = SvgUnitType.User;
+            _deviceValue = null;
         }
 
-        public static System.Drawing.PointF GetDevicePoint(SvgUnit x, SvgUnit y, ISvgRenderer renderer, SvgElement owner)
+        public static PointF GetDevicePoint(SvgUnit x, SvgUnit y, ISvgRenderer renderer, SvgElement owner)
         {
-            return new System.Drawing.PointF(x.ToDeviceValue(renderer, UnitRenderingType.Horizontal, owner),
+            return new PointF(x.ToDeviceValue(renderer, UnitRenderingType.Horizontal, owner),
                                              y.ToDeviceValue(renderer, UnitRenderingType.Vertical, owner));
         }
-        public static System.Drawing.PointF GetDevicePointOffset(SvgUnit x, SvgUnit y, ISvgRenderer renderer, SvgElement owner)
+        public static PointF GetDevicePointOffset(SvgUnit x, SvgUnit y, ISvgRenderer renderer, SvgElement owner)
         {
-            return new System.Drawing.PointF(x.ToDeviceValue(renderer, UnitRenderingType.HorizontalOffset, owner),
+            return new PointF(x.ToDeviceValue(renderer, UnitRenderingType.HorizontalOffset, owner),
                                              y.ToDeviceValue(renderer, UnitRenderingType.VerticalOffset, owner));
         }
 
-        public static System.Drawing.SizeF GetDeviceSize(SvgUnit width, SvgUnit height, ISvgRenderer renderer, SvgElement owner)
+        public static SizeF GetDeviceSize(SvgUnit width, SvgUnit height, ISvgRenderer renderer, SvgElement owner)
         {
-            return new System.Drawing.SizeF(width.ToDeviceValue(renderer, UnitRenderingType.HorizontalOffset, owner),
+            return new SizeF(width.ToDeviceValue(renderer, UnitRenderingType.HorizontalOffset, owner),
                                             height.ToDeviceValue(renderer, UnitRenderingType.VerticalOffset, owner));
         }
     }

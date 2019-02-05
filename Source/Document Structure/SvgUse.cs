@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing.Drawing2D;
+using Svg.DataTypes;
+using Svg.Rendering;
 
-namespace Svg
+namespace Svg.Document_Structure
 {
     [SvgElement("use")]
-    public class SvgUse : SvgVisualElement
+    public class SvgUse : Basic_Shapes.SvgVisualElement
     {
         private Uri _referencedElement;
 
@@ -103,7 +105,7 @@ namespace Svg
 
         public override System.Drawing.Drawing2D.GraphicsPath Path(ISvgRenderer renderer)
         {
-            SvgVisualElement element = (SvgVisualElement)this.OwnerDocument.IdManager.GetElementById(this.ReferencedElement);
+            Basic_Shapes.SvgVisualElement element = (Basic_Shapes.SvgVisualElement)this.OwnerDocument.IdManager.GetElementById(this.ReferencedElement);
             return (element != null && !this.HasRecursiveReference()) ? element.Path(renderer) : null;
         }
 
@@ -111,7 +113,7 @@ namespace Svg
         {
             get
             {
-                var element = this.OwnerDocument.IdManager.GetElementById(this.ReferencedElement) as SvgVisualElement;
+                var element = this.OwnerDocument.IdManager.GetElementById(this.ReferencedElement) as Basic_Shapes.SvgVisualElement;
                 if (element != null)
                 {
                     return element.Bounds;
@@ -128,7 +130,7 @@ namespace Svg
             {
                 this.SetClip(renderer);
 
-                var element = this.OwnerDocument.IdManager.GetElementById(this.ReferencedElement) as SvgVisualElement;
+                var element = this.OwnerDocument.IdManager.GetElementById(this.ReferencedElement) as Basic_Shapes.SvgVisualElement;
                 if (element != null)
                 {
                     var origParent = element.Parent;

@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ComponentModel;
+using Svg.Painting;
 
-namespace Svg
+namespace Svg.DataTypes
 {
     /// <summary>This property describes transformations that are added to the text of an element.</summary>
     [TypeConverter(typeof(SvgTextTransformationConverter))]

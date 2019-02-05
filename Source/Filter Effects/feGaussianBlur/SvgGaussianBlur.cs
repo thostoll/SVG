@@ -1,8 +1,7 @@
 using System;
 using System.Drawing;
-using System.Collections.Generic;
 
-namespace Svg.FilterEffects
+namespace Svg.Filter_Effects.feGaussianBlur
 {
     public enum BlurType
     {
@@ -15,7 +14,6 @@ namespace Svg.FilterEffects
     public class SvgGaussianBlur : SvgFilterPrimitive
     {
         private float _stdDeviation;
-        private BlurType _blurType;
 
         private int[] _kernel;
         private int _kernelSum;
@@ -32,10 +30,9 @@ namespace Svg.FilterEffects
         }
 
         public SvgGaussianBlur(float stdDeviation, BlurType blurType)
-            : base()
         {
             _stdDeviation = stdDeviation;
-            _blurType = blurType;
+            BlurType = blurType;
             PreCalculate();
         }
 
@@ -43,23 +40,23 @@ namespace Svg.FilterEffects
 
         private void PreCalculate()
         {
-            int sz = (int)(_stdDeviation * 2 + 1);
+            var sz = (int)(_stdDeviation * 2 + 1);
             _kernel = new int[sz];
             _multable = new int[sz, 256];
-            for (int i = 1; i <= _stdDeviation; i++)
+            for (var i = 1; i <= _stdDeviation; i++)
             {
-                int szi = (int)(_stdDeviation - i);
-                int szj = (int)(_stdDeviation + i);
+                var szi = (int)(_stdDeviation - i);
+                var szj = (int)(_stdDeviation + i);
                 _kernel[szj] = _kernel[szi] = (szi + 1) * (szi + 1);
                 _kernelSum += (_kernel[szj] + _kernel[szi]);
-                for (int j = 0; j < 256; j++)
+                for (var j = 0; j < 256; j++)
                 {
                     _multable[szj, j] = _multable[szi, j] = _kernel[szj] * j;
                 }
             }
             _kernel[(int)_stdDeviation] = (int)((_stdDeviation + 1) * (_stdDeviation + 1));
             _kernelSum += _kernel[(int)_stdDeviation];
-            for (int j = 0; j < 256; j++)
+            for (var j = 0; j < 256; j++)
             {
                 _multable[(int)_stdDeviation, j] = _kernel[(int)_stdDeviation] * j;
             }
@@ -67,26 +64,25 @@ namespace Svg.FilterEffects
 
         public Bitmap Apply(Image inputImage)
         {
-            var bitmapSrc = inputImage as Bitmap;
-            if (bitmapSrc == null) bitmapSrc = new Bitmap(inputImage);
+            var bitmapSrc = inputImage as Bitmap ?? new Bitmap(inputImage);
 
-            using (RawBitmap src = new RawBitmap(bitmapSrc))
+            using (var src = new RawBitmap(bitmapSrc))
             {
-                using (RawBitmap dest = new RawBitmap(new Bitmap(inputImage.Width, inputImage.Height)))
+                using (var dest = new RawBitmap(new Bitmap(inputImage.Width, inputImage.Height)))
                 {
-                    int pixelCount = src.Width * src.Height;
-                    int[] b = new int[pixelCount];
-                    int[] g = new int[pixelCount];
-                    int[] r = new int[pixelCount];
-                    int[] a = new int[pixelCount];
+                    var pixelCount = src.Width * src.Height;
+                    var b = new int[pixelCount];
+                    var g = new int[pixelCount];
+                    var r = new int[pixelCount];
+                    var a = new int[pixelCount];
 
-                    int[] b2 = new int[pixelCount];
-                    int[] g2 = new int[pixelCount];
-                    int[] r2 = new int[pixelCount];
-                    int[] a2 = new int[pixelCount];
+                    var b2 = new int[pixelCount];
+                    var g2 = new int[pixelCount];
+                    var r2 = new int[pixelCount];
+                    var a2 = new int[pixelCount];
 
-                    int ptr = 0;
-                    for (int i = 0; i < pixelCount; i++)
+                    var ptr = 0;
+                    for (var i = 0; i < pixelCount; i++)
                     {
                         b[i] = src.ArgbValues[ptr];
                         g[i] = src.ArgbValues[++ptr];
@@ -101,15 +97,15 @@ namespace Svg.FilterEffects
                     int asum;
                     int read;
 
-                    int start = 0;
-                    int index = 0;
-                    if (_blurType != BlurType.VerticalOnly)
+                    var start = 0;
+                    var index = 0;
+                    if (BlurType != BlurType.VerticalOnly)
                     {
-                        for (int i = 0; i < pixelCount; i++)
+                        for (var i = 0; i < pixelCount; i++)
                         {
                             bsum = gsum = rsum = asum = 0;
                             read = (int)(i - _stdDeviation);
-                            for (int z = 0; z < _kernel.Length; z++)
+                            for (var z = 0; z < _kernel.Length; z++)
                             {
                                 if (read < start)
                                 {
@@ -135,7 +131,7 @@ namespace Svg.FilterEffects
                             r2[i] = (rsum / _kernelSum);
                             a2[i] = (asum / _kernelSum);
 
-                            if (_blurType == BlurType.HorizontalOnly)
+                            if (BlurType == BlurType.HorizontalOnly)
                             {
                                 dest.ArgbValues[index] = (byte)(bsum / _kernelSum);
                                 dest.ArgbValues[++index] = (byte)(gsum / _kernelSum);
@@ -151,25 +147,25 @@ namespace Svg.FilterEffects
                         }
                     }
 
-                    if (_blurType == BlurType.HorizontalOnly)
+                    if (BlurType == BlurType.HorizontalOnly)
                     {
                         return dest.Bitmap;
                     }
 
                     int tempy;
                     index = 0;
-                    for (int i = 0; i < src.Height; i++)
+                    for (var i = 0; i < src.Height; i++)
                     {
-                        int y = (int)(i - _stdDeviation);
+                        var y = (int)(i - _stdDeviation);
                         start = y * src.Width;
-                        for (int j = 0; j < src.Width; j++)
+                        for (var j = 0; j < src.Width; j++)
                         {
                             bsum = gsum = rsum = asum = 0;
                             read = start + j;
                             tempy = y;
-                            for (int z = 0; z < _kernel.Length; z++)
+                            for (var z = 0; z < _kernel.Length; z++)
                             {
-                                if (_blurType == BlurType.VerticalOnly)
+                                if (BlurType == BlurType.VerticalOnly)
                                 {
                                     if (tempy < 0)
                                     {
@@ -229,7 +225,7 @@ namespace Svg.FilterEffects
         [SvgAttribute("stdDeviation")]
         public float StdDeviation
         {
-            get { return _stdDeviation; }
+            get => _stdDeviation;
             set
             {
                 if (value <= 0)
@@ -242,22 +238,14 @@ namespace Svg.FilterEffects
         }
 
 
-        public BlurType BlurType
-        {
-            get { return _blurType; }
-            set
-            {
-                _blurType = value;
-            }
-        }
-
+        public BlurType BlurType { get; set; }
 
 
         public override void Process(ImageBuffer buffer)
         {
-            var inputImage = buffer[this.Input];
+            var inputImage = buffer[Input];
             var result = Apply(inputImage);
-            buffer[this.Result] = result;
+            buffer[Result] = result;
         }
 
 
@@ -269,10 +257,11 @@ namespace Svg.FilterEffects
 
         public override SvgElement DeepCopy<T>()
         {
-            var newObj = base.DeepCopy<T>() as SvgGaussianBlur;
-            newObj.StdDeviation = this.StdDeviation;
-            newObj.BlurType = this.BlurType;
+            if (!(base.DeepCopy<T>() is SvgGaussianBlur newObj)) return null;
+            newObj.StdDeviation = StdDeviation;
+            newObj.BlurType = BlurType;
             return newObj;
+
         }
     }
 }

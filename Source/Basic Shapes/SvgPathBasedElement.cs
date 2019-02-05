@@ -1,11 +1,11 @@
 using System.Drawing.Drawing2D;
 
-namespace Svg
+namespace Svg.Basic_Shapes
 {
     /// <summary>
     /// Represents an element that is using a GraphicsPath as rendering base.
     /// </summary>
-    public abstract class SvgPathBasedElement : SvgVisualElement
+    public abstract class SvgPathBasedElement : Basic_Shapes.SvgVisualElement
     {
         public override System.Drawing.RectangleF Bounds
         {

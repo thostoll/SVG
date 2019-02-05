@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Drawing;
 using System.IO;
 using System.Xml;
 using System.Threading;
 using System.Globalization;
+using Svg.Basic_Shapes;
 
 namespace Svg
 {
@@ -46,7 +44,7 @@ namespace Svg
 
         public static string GetXML(this SvgElement elem)
         {
-            var result = "";
+            string result;
 
             var currentCulture = Thread.CurrentThread.CurrentCulture;
             try

@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Diagnostics;
+using Svg.DataTypes;
+using Svg.Paths;
+using Svg.Rendering;
 
-namespace Svg
+namespace Svg.Text
 {
     /// <summary>
     /// The <see cref="SvgText"/> element defines a graphics element consisting of text.
@@ -62,7 +60,7 @@ namespace Svg
 
         protected override GraphicsPath GetBaselinePath(ISvgRenderer renderer)
         {
-            var path = this.OwnerDocument.IdManager.GetElementById(this.ReferencedPath) as SvgVisualElement;
+            var path = this.OwnerDocument.IdManager.GetElementById(this.ReferencedPath) as Basic_Shapes.SvgVisualElement;
             if (path == null) return null;
             var pathData = (GraphicsPath)path.Path(renderer).Clone();
             if (path.Transforms.Count > 0)

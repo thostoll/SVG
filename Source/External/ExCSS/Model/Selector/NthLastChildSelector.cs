@@ -1,6 +1,9 @@
-﻿using System;
+﻿
 
 // ReSharper disable once CheckNamespace
+
+using Svg.External.ExCSS;
+
 namespace Svg.ExCSS
 {
     internal sealed class NthLastChildSelector : NthChildSelector, IToString

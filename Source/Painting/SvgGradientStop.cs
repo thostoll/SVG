@@ -1,10 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
 using System.ComponentModel;
+using System.Drawing;
+using Svg.DataTypes;
 
-namespace Svg
+namespace Svg.Painting
 {
     /// <summary>
     /// Represents a colour stop in a gradient.

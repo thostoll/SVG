@@ -1,9 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Xml;
+using Svg.Rendering;
 
-namespace Svg
+namespace Svg.Document_Structure
 {
     /// <summary>
     /// Represents a list of re-usable SVG components.
@@ -50,9 +48,9 @@ namespace Svg
 			return DeepCopy<SvgDocumentMetadata>();
 		}
 
-		public override void InitialiseFromXML(XmlTextReader reader, SvgDocument document)
+		public override void InitialiseFromXml(XmlTextReader reader, SvgDocument document)
 		{
-			base.InitialiseFromXML(reader, document);
+			base.InitialiseFromXml(reader, document);
 
 			//read in the metadata just as a string ready to be written straight back out again
 			Content = reader.ReadInnerXml();

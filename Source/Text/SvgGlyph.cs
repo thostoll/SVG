@@ -1,8 +1,10 @@
-﻿using System.Linq;
-using Svg.Pathing;
-using System.Drawing.Drawing2D;
+﻿using System.Drawing.Drawing2D;
+using System.Linq;
+using Svg.Basic_Shapes;
+using Svg.Paths;
+using Svg.Rendering;
 
-namespace Svg
+namespace Svg.Text
 {
     [SvgElement("glyph")]
     public class SvgGlyph : SvgPathBasedElement

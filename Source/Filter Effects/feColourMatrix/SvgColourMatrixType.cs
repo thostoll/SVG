@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
+﻿using System.ComponentModel;
+using Svg.Painting;
 
-namespace Svg.FilterEffects
+namespace Svg.Filter_Effects.feColourMatrix
 {
     [TypeConverter(typeof(EnumBaseConverter<SvgColourMatrixType>))]
 	public enum SvgColourMatrixType

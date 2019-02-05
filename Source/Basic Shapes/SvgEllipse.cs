@@ -1,7 +1,10 @@
 using System.Drawing.Drawing2D;
+using Svg.DataTypes;
+using Svg.Rendering;
 
-namespace Svg
+namespace Svg.Basic_Shapes
 {
+    /// <inheritdoc />
     /// <summary>
     /// Represents and SVG ellipse element.
     /// </summary>
@@ -17,13 +20,13 @@ namespace Svg
         [SvgAttribute("cx")]
         public virtual SvgUnit CenterX
         {
-            get { return this._centerX; }
+            get => _centerX;
             set
             {
             	if(_centerX != value)
             	{
-            		this._centerX = value;
-            		this.IsPathDirty = true;
+            		_centerX = value;
+            		IsPathDirty = true;
             		OnAttributeChanged(new AttributeEventArgs{ Attribute = "cx", Value = value });
             	}
             }
@@ -32,46 +35,40 @@ namespace Svg
         [SvgAttribute("cy")]
         public virtual SvgUnit CenterY
         {
-        	get { return this._centerY; }
-        	set
+        	get => _centerY;
+            set
         	{
-        		if(_centerY != value)
-        		{
-        			this._centerY = value;
-        			this.IsPathDirty = true;
-        			OnAttributeChanged(new AttributeEventArgs{ Attribute = "cy", Value = value });
-        		}
-        	}
+                if (_centerY == value) return;
+                _centerY = value;
+                IsPathDirty = true;
+                OnAttributeChanged(new AttributeEventArgs{ Attribute = "cy", Value = value });
+            }
         }
 
         [SvgAttribute("rx")]
         public virtual SvgUnit RadiusX
         {
-        	get { return this._radiusX; }
-        	set
+        	get => _radiusX;
+            set
         	{
-        		if(_radiusX != value)
-        		{
-        			this._radiusX = value;
-        			this.IsPathDirty = true;
-        			OnAttributeChanged(new AttributeEventArgs{ Attribute = "rx", Value = value });
-        		}
-        	}
+                if (_radiusX == value) return;
+                _radiusX = value;
+                IsPathDirty = true;
+                OnAttributeChanged(new AttributeEventArgs{ Attribute = "rx", Value = value });
+            }
         }
 
         [SvgAttribute("ry")]
         public virtual SvgUnit RadiusY
         {
-        	get { return this._radiusY; }
-        	set
+        	get => _radiusY;
+            set
         	{
-        		if(_radiusY != value)
-        		{
-        			this._radiusY = value;
-        			this.IsPathDirty = true;
-        			OnAttributeChanged(new AttributeEventArgs{ Attribute = "ry", Value = value });
-        		}
-        	}
+                if (_radiusY == value) return;
+                _radiusY = value;
+                IsPathDirty = true;
+                OnAttributeChanged(new AttributeEventArgs{ Attribute = "ry", Value = value });
+            }
         }
 
         /// <summary>
@@ -80,27 +77,25 @@ namespace Svg
         /// <value></value>
         public override GraphicsPath Path(ISvgRenderer renderer)
         {
-            if (this._path == null || this.IsPathDirty)
+            if (_path != null && !IsPathDirty) return _path;
+            var halfStrokeWidth = base.StrokeWidth / 2;
+
+            // If it is to render, don't need to consider stroke width.
+            // i.e stroke width only to be considered when calculating boundary
+            if (renderer != null)
             {
-							float halfStrokeWidth = base.StrokeWidth / 2;
-
-							// If it is to render, don't need to consider stroke width.
-							// i.e stroke width only to be considered when calculating boundary
-							if (renderer != null)
-							{
-								halfStrokeWidth = 0;
-								this.IsPathDirty = false;
-							}
-
-                var center = SvgUnit.GetDevicePoint(this._centerX, this._centerY, renderer, this);
-				var radiusX = this.RadiusX.ToDeviceValue(renderer, UnitRenderingType.Other, this) + halfStrokeWidth;
-                var radiusY = this.RadiusY.ToDeviceValue(renderer, UnitRenderingType.Other, this) + halfStrokeWidth;
-
-                this._path = new GraphicsPath();
-                _path.StartFigure();
-                _path.AddEllipse(center.X - radiusX, center.Y - radiusY, 2 * radiusX, 2 * radiusY);
-                _path.CloseFigure();
+                halfStrokeWidth = 0;
+                IsPathDirty = false;
             }
+
+            var center = SvgUnit.GetDevicePoint(_centerX, _centerY, renderer, this);
+            var radiusX = RadiusX.ToDeviceValue(renderer, UnitRenderingType.Other, this) + halfStrokeWidth;
+            var radiusY = RadiusY.ToDeviceValue(renderer, UnitRenderingType.Other, this) + halfStrokeWidth;
+
+            _path = new GraphicsPath();
+            _path.StartFigure();
+            _path.AddEllipse(center.X - radiusX, center.Y - radiusY, 2 * radiusX, 2 * radiusY);
+            _path.CloseFigure();
             return _path;
         }
 
@@ -110,7 +105,7 @@ namespace Svg
         /// <param name="renderer">The <see cref="ISvgRenderer"/> object used for rendering.</param>
         protected override void Render(ISvgRenderer renderer)
         {
-            if (this._radiusX.Value > 0.0f && this._radiusY.Value > 0.0f)
+            if (_radiusX.Value > 0.0f && _radiusY.Value > 0.0f)
             {
                 base.Render(renderer);
             }
@@ -132,12 +127,16 @@ namespace Svg
 
 		public override SvgElement DeepCopy<T>()
 		{
-			var newObj = base.DeepCopy<T>() as SvgEllipse;
-			newObj.CenterX = this.CenterX;
-			newObj.CenterY = this.CenterY;
-			newObj.RadiusX = this.RadiusX;
-			newObj.RadiusY = this.RadiusY;
-			return newObj;
-		}
+            if (base.DeepCopy<T>() is SvgEllipse newObj)
+            {
+                newObj.CenterX = CenterX;
+                newObj.CenterY = CenterY;
+                newObj.RadiusX = RadiusX;
+                newObj.RadiusY = RadiusY;
+                return newObj;
+            }
+
+            return null;
+        }
     }
 }

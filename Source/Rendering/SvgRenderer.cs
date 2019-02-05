@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
+using Svg.Painting;
 
-namespace Svg
+namespace Svg.Rendering
 {
     /// <summary>
     /// Convenience wrapper around a graphics object

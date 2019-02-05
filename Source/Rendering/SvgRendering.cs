@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ComponentModel;
+﻿using System.ComponentModel;
+using Svg.Painting;
 
-namespace Svg
+namespace Svg.Rendering
 {
     /// <summary>
     /// The creator of SVG content might want to provide a hint about what tradeoffs to make as the browser renders 'path' element or basic shapes. The shape-rendering attribute provides these hints.

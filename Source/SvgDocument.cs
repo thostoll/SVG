@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Text;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -15,9 +13,16 @@ using System.Threading;
 using System.Globalization;
 using Svg.Exceptions;
 using System.Runtime.InteropServices;
+using Svg.DataTypes;
+using Svg.Document_Structure;
+using Svg.Painting;
+using Svg.Rendering;
+using Svg.Text;
+using Parser = Svg.External.ExCSS.Parser;
 
 namespace Svg
 {
+    /// <inheritdoc cref="SvgFragment" />
     /// <summary>
     /// The class used to create and load SVG documents.
     /// </summary>
@@ -26,14 +31,14 @@ namespace Svg
         public static readonly int PointsPerInch = GetSystemDpi();
         private SvgElementIdManager _idManager;
 
-        private Dictionary<string, IEnumerable<SvgFontFace>> _fontDefns = null;
+        private Dictionary<string, IEnumerable<SvgFontFace>> _fontDefns;
 
         private static int GetSystemDpi()
         {
-            IntPtr hDC = GetDC(IntPtr.Zero);
-            const int LOGPIXELSY = 90;
-            int result = GetDeviceCaps(hDC, LOGPIXELSY);
-            ReleaseDC(IntPtr.Zero, hDC);
+            var hDc = GetDC(IntPtr.Zero);
+            const int logpixelsy = 90;
+            var result = GetDeviceCaps(hDc, logpixelsy);
+            ReleaseDC(IntPtr.Zero, hDc);
             return result;
         }
 
@@ -44,21 +49,19 @@ namespace Svg
         private static extern IntPtr GetDC(IntPtr hWnd);
 
         [DllImport("user32.dll")]
-        private static extern int ReleaseDC(IntPtr hWnd, IntPtr hDC);
+        private static extern int ReleaseDC(IntPtr hWnd, IntPtr hDc);
 
         internal Dictionary<string, IEnumerable<SvgFontFace>> FontDefns()
         {
-            if (_fontDefns == null)
-            {
-                _fontDefns = (from f in Descendants().OfType<SvgFontFace>()
-                              group f by f.FontFamily into family
-                              select family).ToDictionary(f => f.Key, f => (IEnumerable<SvgFontFace>)f);
-            }
-            return _fontDefns;
+            return _fontDefns ?? (_fontDefns = (from f in Descendants().OfType<SvgFontFace>()
+                       group f by f.FontFamily
+                       into family
+                       select family).ToDictionary(f => f.Key, f => (IEnumerable<SvgFontFace>) f));
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Initializes a new instance of the <see cref="SvgDocument"/> class.
+        /// Initializes a new instance of the <see cref="T:Svg.SvgDocument" /> class.
         /// </summary>
         public SvgDocument()
         {
@@ -70,18 +73,7 @@ namespace Svg
         /// <summary>
         /// Gets an <see cref="SvgElementIdManager"/> for this document.
         /// </summary>
-        protected internal virtual SvgElementIdManager IdManager
-        {
-            get
-            {
-                if (_idManager == null)
-                {
-                    _idManager = new SvgElementIdManager(this);
-                }
-
-                return _idManager;
-            }
-        }
+        protected internal virtual SvgElementIdManager IdManager => _idManager ?? (_idManager = new SvgElementIdManager(this));
 
         /// <summary>
         /// Overwrites the current IdManager with a custom implementation. 
@@ -102,19 +94,13 @@ namespace Svg
         /// <summary>
         /// Gets or sets an external Cascading Style Sheet (CSS)
         /// </summary>
-        public string ExternalCSSHref { get; set; }        
+        public string ExternalCssHref { get; set; }        
 
         #region ITypeDescriptorContext Members
 
-        IContainer ITypeDescriptorContext.Container
-        {
-            get { throw new NotImplementedException(); }
-        }
+        IContainer ITypeDescriptorContext.Container => throw new NotImplementedException();
 
-        object ITypeDescriptorContext.Instance
-        {
-            get { return this; }
-        }
+        object ITypeDescriptorContext.Instance => this;
 
         void ITypeDescriptorContext.OnComponentChanged()
         {
@@ -155,7 +141,7 @@ namespace Svg
         /// <returns>An <see cref="SvgElement"/> of one exists with the specified ID; otherwise false.</returns>
         public virtual TSvgElement GetElementById<TSvgElement>(string id) where TSvgElement : SvgElement
         {
-            return (this.GetElementById(id) as TSvgElement);
+            return (GetElementById(id) as TSvgElement);
         }
 
         /// <summary>
@@ -225,10 +211,10 @@ namespace Svg
         {
             if (string.IsNullOrEmpty(svg))
             {
-                throw new ArgumentNullException("svg");
+                throw new ArgumentNullException(nameof(svg));
             }
 
-            using (var strReader = new System.IO.StringReader(svg))
+            using (var strReader = new StringReader(svg))
             {
                 var reader = new SvgTextReader(strReader, null);
                 reader.XmlResolver = new SvgDtdResolver();
@@ -247,7 +233,7 @@ namespace Svg
         {
             if (stream == null)
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
 
             // Don't close the stream via a dispose: that is the client's job.
@@ -260,9 +246,6 @@ namespace Svg
         private static T Open<T>(XmlReader reader) where T : SvgDocument, new()
         {
             var elementStack = new Stack<SvgElement>();
-            bool elementEmpty;
-            SvgElement element = null;
-            SvgElement parent;
             T svgDocument = null;
 			var elementFactory = new SvgElementFactory();
 
@@ -272,12 +255,13 @@ namespace Svg
             {
                 try
                 {
+                    SvgElement element;
                     switch (reader.NodeType)
                     {
                         case XmlNodeType.Element:
                             // Does this element have a value or children
                             // (Must do this check here before we progress to another node)
-                            elementEmpty = reader.IsEmptyElement;
+                            var elementEmpty = reader.IsEmptyElement;
                             // Create element
                             if (elementStack.Count > 0)
                             {
@@ -292,7 +276,7 @@ namespace Svg
                             // Add to the parents children
                             if (elementStack.Count > 0)
                             {
-                                parent = elementStack.Peek();
+                                var parent = elementStack.Peek();
                                 if (parent != null && element != null)
                                 {
                                     parent.Children.Add(element);
@@ -369,7 +353,7 @@ namespace Svg
                         selectors = Enumerable.Repeat(rule.Selector, 1);
                     }
 
-                    foreach (var selector in selectors)
+                    foreach (var unused in selectors)
                     {
                         elemsToStyle = svgDocument.QuerySelectorAll(rule.Selector.ToString(), elementFactory);
                         foreach (var elem in elemsToStyle)
@@ -405,7 +389,7 @@ namespace Svg
         {
             if (document == null)
             {
-                throw new ArgumentNullException("document");
+                throw new ArgumentNullException(nameof(document));
             }
 
             var reader = new SvgNodeReader(document.DocumentElement, null);
@@ -431,11 +415,11 @@ namespace Svg
         {
             if (renderer == null)
             {
-                throw new ArgumentNullException("renderer");
+                throw new ArgumentNullException(nameof(renderer));
             }
 
             renderer.SetBoundable(this);
-            this.Render(renderer);
+            Render(renderer);
         }
 
         /// <summary>
@@ -458,7 +442,7 @@ namespace Svg
         {
             if (graphics == null)
             {
-                throw new ArgumentNullException("graphics");
+                throw new ArgumentNullException(nameof(graphics));
             }
 
             var renderer = SvgRenderer.FromGraphics(graphics);
@@ -470,7 +454,7 @@ namespace Svg
             {
                 renderer.SetBoundable(this);
             }
-            this.Render(renderer);
+            Render(renderer);
         }
 
 	    /// <summary>
@@ -482,7 +466,7 @@ namespace Svg
 		    //Trace.TraceInformation("Begin Render");
 
 		    var size = GetDimensions();
-		    Bitmap bitmap = null;
+		    Bitmap bitmap;
 		    try
 		    {
 			    bitmap = new Bitmap((int) Math.Round(size.Width), (int) Math.Round(size.Height));
@@ -515,21 +499,14 @@ namespace Svg
         {
             //Trace.TraceInformation("Begin Render");
 
-            try
+            using (var renderer = SvgRenderer.FromImage(bitmap))
             {
-				using (var renderer = SvgRenderer.FromImage(bitmap))
-				{
-					renderer.SetBoundable(new GenericBoundable(0, 0, bitmap.Width, bitmap.Height));
+                renderer.SetBoundable(new GenericBoundable(0, 0, bitmap.Width, bitmap.Height));
 
-					//EO, 2014-12-05: Requested to ensure proper zooming out (reduce size). Otherwise it clip the image.
-					this.Overflow = SvgOverflow.Auto;
+                //EO, 2014-12-05: Requested to ensure proper zooming out (reduce size). Otherwise it clip the image.
+                Overflow = SvgOverflow.Auto;
 
-					this.Render(renderer);
-				}
-            }
-            catch
-            {
-                throw;
+                Render(renderer);
             }
 
             //Trace.TraceInformation("End Render");
@@ -579,10 +556,10 @@ namespace Svg
             return;
 
           // Ratio of height/width of the original SVG size, to be used for scaling transformation
-          float ratio = size.Height / size.Width;
+          var ratio = size.Height / size.Width;
 
-          size.Width = rasterWidth > 0 ? (float)rasterWidth : size.Width;
-          size.Height = rasterHeight > 0 ? (float)rasterHeight : size.Height;
+          size.Width = rasterWidth > 0 ? rasterWidth : size.Width;
+          size.Height = rasterHeight > 0 ? rasterHeight : size.Height;
 
           if (rasterHeight == 0 && rasterWidth > 0)
           {
@@ -613,15 +590,15 @@ namespace Svg
         public void Write(Stream stream, bool useBom = true)
         {
 
-            var xmlWriter = new XmlTextWriter(stream, useBom ? Encoding.UTF8 : new System.Text.UTF8Encoding(false));
+            var xmlWriter = new XmlTextWriter(stream, useBom ? Encoding.UTF8 : new UTF8Encoding(false));
             xmlWriter.Formatting = Formatting.Indented;
             xmlWriter.WriteStartDocument();
             xmlWriter.WriteDocType("svg", "-//W3C//DTD SVG 1.1//EN", "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd", null);
             
-            if (!String.IsNullOrEmpty(this.ExternalCSSHref))
-                xmlWriter.WriteProcessingInstruction("xml-stylesheet", String.Format("type=\"text/css\" href=\"{0}\"", this.ExternalCSSHref));
+            if (!string.IsNullOrEmpty(ExternalCssHref))
+                xmlWriter.WriteProcessingInstruction("xml-stylesheet", $"type=\"text/css\" href=\"{ExternalCssHref}\"");
 
-            this.Write(xmlWriter);
+            Write(xmlWriter);
 
             xmlWriter.Flush();
         }
@@ -630,7 +607,7 @@ namespace Svg
         {
             using (var fs = new FileStream(path, FileMode.Create, FileAccess.Write))
             {
-                this.Write(fs, useBom);
+                Write(fs, useBom);
             }
         }
     }

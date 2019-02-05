@@ -1,10 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
 using System.ComponentModel;
+using System.Drawing;
+using Svg.Rendering;
 
-namespace Svg
+namespace Svg.DataTypes
 {
     public struct SvgPoint
     {
