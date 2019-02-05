@@ -42,12 +42,12 @@ namespace Svg
         private readonly IEnumerable<PropertyAttributeTuple> _svgPropertyAttributes;
         private readonly IEnumerable<EventAttributeTuple> _svgEventAttributes;
 
-        internal SvgElement _parent;
+        internal SvgElement SvgParent;
         private string _elementName;
         private SvgAttributeCollection _attributes;
         private readonly EventHandlerList _eventHandlers;
         private readonly SvgElementCollection _children;
-        private static readonly object _loadEventKey = new object();
+        private static readonly object LoadEventKey = new object();
         private Region _graphicsClip;
         private Matrix _graphicsMatrix;
         private readonly List<ISvgNode> _nodes = new List<ISvgNode>();
@@ -173,8 +173,8 @@ namespace Svg
         /// </summary>
         public event EventHandler Load
         {
-            add { Events.AddHandler(_loadEventKey, value); }
-            remove { Events.RemoveHandler(_loadEventKey, value); }
+            add { Events.AddHandler(LoadEventKey, value); }
+            remove { Events.RemoveHandler(LoadEventKey, value); }
         }
 
         /// <summary>
@@ -213,7 +213,7 @@ namespace Svg
         /// <value>An <see cref="SvgElement"/> if one exists; otherwise null.</value>
         public virtual SvgElement Parent
         {
-            get { return _parent; }
+            get { return SvgParent; }
         }
 
         public IEnumerable<SvgElement> Parents
@@ -391,7 +391,7 @@ namespace Svg
             set => Attributes["space"] = value;
         }
 
-        public void SetAndForceUniqueId(string value, bool autoForceUniqueId = true, Action<SvgElement, string, string> logElementOldIDNewID = null)
+        public void SetAndForceUniqueId(string value, bool autoForceUniqueId = true, Action<SvgElement, string, string> logElementOldIdNewId = null)
         {
             // Don't do anything if it hasn't changed
             if (string.CompareOrdinal(Id, value) == 0)
@@ -403,7 +403,7 @@ namespace Svg
 
             Attributes["id"] = value;
 
-            OwnerDocument?.IdManager.AddAndForceUniqueID(this, null, autoForceUniqueId, logElementOldIDNewID);
+            OwnerDocument?.IdManager.AddAndForceUniqueId(this, null, autoForceUniqueId, logElementOldIdNewId);
         }
 
         /// <summary>

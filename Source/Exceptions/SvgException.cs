@@ -9,25 +9,25 @@ namespace Svg.Exceptions
         }
     }
 
-    public class SvgIDException : FormatException
+    public class SvgIdException : FormatException
     {
-        public SvgIDException(string message)
+        public SvgIdException(string message)
             : base(message)
         {
         }
     }
 
-    public class SvgIDExistsException : SvgIDException
+    public class SvgIdExistsException : SvgIdException
     {
-        public SvgIDExistsException(string message)
+        public SvgIdExistsException(string message)
             : base(message)
         {
         }
     }
 
-    public class SvgIDWrongFormatException : SvgIDException
+    public class SvgIdWrongFormatException : SvgIdException
     {
-        public SvgIDWrongFormatException(string message)
+        public SvgIdWrongFormatException(string message)
             : base(message)
         {
         }

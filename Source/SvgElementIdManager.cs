@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Net;
-using System.IO;
 using Svg.Exceptions;
 
 namespace Svg
@@ -14,8 +11,8 @@ namespace Svg
     /// </summary>
     public class SvgElementIdManager
     {
-        private SvgDocument _document;
-        private Dictionary<string, SvgElement> _idValueMap;
+        private readonly SvgDocument _document;
+        private readonly Dictionary<string, SvgElement> _idValueMap;
 
         /// <summary>
         /// Retrieves the <see cref="SvgElement"/> with the specified ID.
@@ -39,8 +36,7 @@ namespace Svg
                 id = id.Substring(1);
             }
 
-            SvgElement element = null;
-            this._idValueMap.TryGetValue(id, out element);
+            _idValueMap.TryGetValue(id, out var element);
 
             return element;
         }
@@ -48,9 +44,9 @@ namespace Svg
         public virtual SvgElement GetElementById(Uri uri)
         {
             if (uri.ToString().StartsWith("url(")) uri = new Uri(uri.ToString().Substring(4).TrimEnd(')'), UriKind.Relative);
-            if (!uri.IsAbsoluteUri && this._document.BaseUri != null && !uri.ToString().StartsWith("#"))
+            if (!uri.IsAbsoluteUri && _document.BaseUri != null && !uri.ToString().StartsWith("#"))
             {
-                var fullUri = new Uri(this._document.BaseUri, uri);
+                var fullUri = new Uri(_document.BaseUri, uri);
                 var hash = fullUri.OriginalString.Substring(fullUri.OriginalString.LastIndexOf('#'));
                 SvgDocument doc;
                 switch (fullUri.Scheme.ToLowerInvariant())
@@ -71,7 +67,7 @@ namespace Svg
                 }
 
             }
-            return this.GetElementById(uri.ToString());
+            return GetElementById(uri.ToString());
         }
 
         /// <summary>
@@ -80,7 +76,7 @@ namespace Svg
         /// <param name="element">The <see cref="SvgElement"/> to be managed.</param>
         public virtual void Add(SvgElement element)
         {
-            AddAndForceUniqueID(element, null, false);
+            AddAndForceUniqueId(element, null, false);
         }
 
         /// <summary>
@@ -89,23 +85,22 @@ namespace Svg
         /// </summary>
         /// <param name="element">The <see cref="SvgElement"/> to be managed.</param>
         /// <param name="sibling">Not used.</param>
-        /// <param name="autoForceUniqueID">Pass true here, if you want the ID to be fixed</param>
-        /// <param name="logElementOldIDNewID">If not null, the action is called before the id is fixed</param>
+        /// <param name="autoForceUniqueId">Pass true here, if you want the ID to be fixed</param>
+        /// <param name="logElementOldIdNewId">If not null, the action is called before the id is fixed</param>
         /// <returns>true, if ID was altered</returns>
-        public virtual bool AddAndForceUniqueID(SvgElement element, SvgElement sibling, bool autoForceUniqueID = true, Action<SvgElement, string, string> logElementOldIDNewID = null)
+        public virtual bool AddAndForceUniqueId(SvgElement element, SvgElement sibling, bool autoForceUniqueId = true, Action<SvgElement, string, string> logElementOldIdNewId = null)
         {
             var result = false;
             if (!string.IsNullOrEmpty(element.Id))
             {
-                var newID = this.EnsureValidId(element.Id, autoForceUniqueID);
-                if (autoForceUniqueID && newID != element.Id)
+                var newId = EnsureValidId(element.Id, autoForceUniqueId);
+                if (autoForceUniqueId && newId != element.Id)
                 {
-                    if(logElementOldIDNewID != null)
-                        logElementOldIDNewID(element, element.Id, newID);
-                    element.ForceUniqueId(newID);
+                    logElementOldIdNewId?.Invoke(element, element.Id, newId);
+                    element.ForceUniqueId(newId);
                     result = true;
                 }
-                this._idValueMap.Add(element.Id, element);
+                _idValueMap.Add(element.Id, element);
             }
             
             OnAdded(element);
@@ -120,7 +115,7 @@ namespace Svg
         {
             if (!string.IsNullOrEmpty(element.Id))
             {
-                this._idValueMap.Remove(element.Id);
+                _idValueMap.Remove(element.Id);
             }
             
             OnRemoved(element);
@@ -130,12 +125,12 @@ namespace Svg
         /// Ensures that the specified ID is valid within the containing <see cref="SvgDocument"/>.
         /// </summary>
         /// <param name="id">A <see cref="string"/> containing the ID to validate.</param>
-        /// <param name="autoForceUniqueID">Creates a new unique id <see cref="string"/>.</param>
+        /// <param name="autoForceUniqueId">Creates a new unique id <see cref="string"/>.</param>
         /// <exception cref="SvgException">
         /// <para>The ID cannot start with a digit.</para>
         /// <para>An element with the same ID already exists within the containing <see cref="SvgDocument"/>.</para>
         /// </exception>
-        public string EnsureValidId(string id, bool autoForceUniqueID = false)
+        public string EnsureValidId(string id, bool autoForceUniqueId = false)
         {
 
             if (string.IsNullOrEmpty(id))
@@ -145,16 +140,16 @@ namespace Svg
 
             if (char.IsDigit(id[0]))
             {
-                if (autoForceUniqueID)
+                if (autoForceUniqueId)
                 {
                     return EnsureValidId("id" + id, true);
                 }
-                throw new SvgIDWrongFormatException("ID cannot start with a digit: '" + id + "'.");
+                throw new SvgIdWrongFormatException("ID cannot start with a digit: '" + id + "'.");
             }
 
-            if (this._idValueMap.ContainsKey(id))
+            if (_idValueMap.ContainsKey(id))
             {
-                if(autoForceUniqueID)
+                if(autoForceUniqueId)
                 {
                     var match = regex.Match(id);
 
@@ -170,7 +165,7 @@ namespace Svg
 
                     return EnsureValidId(id, true);
                 }
-                throw new SvgIDExistsException("An element with the same ID already exists: '" + id + "'.");
+                throw new SvgIdExistsException("An element with the same ID already exists: '" + id + "'.");
             }
 
             return id;
@@ -183,8 +178,8 @@ namespace Svg
         /// <param name="document">The <see cref="SvgDocument"/> containing the <see cref="SvgElement"/>s to manage.</param>
         public SvgElementIdManager(SvgDocument document)
         {
-            this._document = document;
-            this._idValueMap = new Dictionary<string, SvgElement>();
+            _document = document;
+            _idValueMap = new Dictionary<string, SvgElement>();
         }
         
         public event EventHandler<SvgElementEventArgs> ElementAdded;
@@ -195,7 +190,7 @@ namespace Svg
         	var handler = ElementAdded;
         	if(handler != null)
         	{
-        		handler(this._document, new SvgElementEventArgs{ Element = element });
+        		handler(_document, new SvgElementEventArgs{ Element = element });
         	}
         }
         
@@ -204,7 +199,7 @@ namespace Svg
         	var handler = ElementRemoved;
         	if(handler != null)
         	{
-        		handler(this._document, new SvgElementEventArgs{ Element = element });
+        		handler(_document, new SvgElementEventArgs{ Element = element });
         	}
         }
         

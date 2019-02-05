@@ -5,14 +5,8 @@ namespace Svg.Text
     [SvgElement("font-face-uri")]
     public class SvgFontFaceUri : SvgElement
     {
-        private Uri _referencedElement;
-
         [SvgAttribute("href", SvgAttributeAttribute.XLinkNamespace)]
-        public virtual Uri ReferencedElement
-        {
-            get { return this._referencedElement; }
-            set { this._referencedElement = value; }
-        }
+        public virtual Uri ReferencedElement { get; set; }
 
         public override SvgElement DeepCopy()
         {
@@ -21,10 +15,11 @@ namespace Svg.Text
 
         public override SvgElement DeepCopy<T>()
         {
-            var newObj = base.DeepCopy<T>() as SvgFontFaceUri;
-            newObj.ReferencedElement = this.ReferencedElement;
+            if (!(base.DeepCopy<T>() is SvgFontFaceUri newObj)) return null;
+            newObj.ReferencedElement = ReferencedElement;
 
             return newObj;
+
         }
     }
 }

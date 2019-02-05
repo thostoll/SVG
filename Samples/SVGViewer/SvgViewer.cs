@@ -33,7 +33,7 @@ namespace SVGViewer
             {
                 using (var s = new MemoryStream(Encoding.UTF8.GetBytes(textBox1.Text)))
                 {
-                    SvgDocument svgDoc = SvgDocument.Open<SvgDocument>(s, null);
+                    var svgDoc = SvgDocument.Open<SvgDocument>(s, null);
         
                     RenderSvg(svgDoc);
                 }

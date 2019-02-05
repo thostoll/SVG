@@ -6,7 +6,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using Svg.Document_Structure;
-using Svg.ExCSS;
 using Parser = Svg.External.ExCSS.Parser;
 
 namespace Svg
@@ -16,8 +15,8 @@ namespace Svg
     /// </summary>
     internal class SvgElementFactory
     {
-        private Dictionary<string, ElementInfo> availableElements;
-        private Parser cssParser = new Parser();
+        private Dictionary<string, ElementInfo> _availableElements;
+        private readonly Parser _cssParser = new Parser();
 
         /// <summary>
         /// Gets a list of available types that can be used when creating an <see cref="SvgElement"/>.
@@ -26,20 +25,20 @@ namespace Svg
         {
             get
             {
-                if (availableElements == null)
+                if (_availableElements == null)
                 {
                     var svgTypes = from t in typeof(SvgDocument).Assembly.GetExportedTypes()
                                    where t.GetCustomAttributes(typeof(SvgElementAttribute), true).Length > 0
                                    && t.IsSubclassOf(typeof(SvgElement))
                                    select new ElementInfo { ElementName = ((SvgElementAttribute)t.GetCustomAttributes(typeof(SvgElementAttribute), true)[0]).ElementName, ElementType = t };
 
-                    availableElements = (from t in svgTypes
+                    _availableElements = (from t in svgTypes
                                          where t.ElementName != "svg"
                                          group t by t.ElementName into types
                                          select types).ToDictionary(e => e.Key, e => e.SingleOrDefault());
                 }
 
-                return availableElements;
+                return _availableElements;
             }
         }
 
@@ -82,13 +81,13 @@ namespace Svg
 
         private SvgElement CreateElement<T>(XmlReader reader, bool fragmentIsDocument, SvgDocument document) where T : SvgDocument, new()
         {
-            SvgElement createdElement = null;
-            string elementName = reader.LocalName;
-            string elementNS = reader.NamespaceURI;
+            SvgElement createdElement;
+            var elementName = reader.LocalName;
+            var elementNs = reader.NamespaceURI;
 
             //Trace.TraceInformation("Begin CreateElement: {0}", elementName);
 
-            if (elementNS == SvgAttributeAttribute.SvgNamespace || string.IsNullOrEmpty(elementNS))
+            if (elementNs == SvgAttributeAttribute.SvgNamespace || string.IsNullOrEmpty(elementNs))
             {
                 if (elementName == "svg")
                 {
@@ -96,8 +95,7 @@ namespace Svg
                 }
                 else
                 {
-                    ElementInfo validType = null;
-                    if (AvailableElements.TryGetValue(elementName, out validType))
+                    if (AvailableElements.TryGetValue(elementName, out var validType))
                     {
                         createdElement = (SvgElement) Activator.CreateInstance(validType.ElementType);
                     }
@@ -107,10 +105,7 @@ namespace Svg
                     }
                 }
 
-                if (createdElement != null)
-                {
-                    SetAttributes(createdElement, reader, document);
-                }
+                SetAttributes(createdElement, reader, document);
             }
             else
             {
@@ -136,7 +131,7 @@ namespace Svg
             {
                 if (reader.LocalName.Equals("style") && !(element is NonSvgElement)) 
                 {
-                    var inlineSheet = cssParser.Parse("#a{" + reader.Value + "}");
+                    var inlineSheet = _cssParser.Parse("#a{" + reader.Value + "}");
                     foreach (var rule in inlineSheet.StyleRules)
                     {
                         foreach (var decl in rule.Declarations)
@@ -247,13 +242,13 @@ namespace Svg
                     }
                     else
                     {
-                        properties = TypeDescriptor.GetProperties(elementType, new[] { new SvgAttributeAttribute(attributeName) });
+                        properties = TypeDescriptor.GetProperties(elementType, new Attribute[] { new SvgAttributeAttribute(attributeName) });
                         _propertyDescriptors[elementType].Add(attributeName, properties);
                     }
                 }
                 else
                 {
-                    properties = TypeDescriptor.GetProperties(elementType, new[] { new SvgAttributeAttribute(attributeName) });
+                    properties = TypeDescriptor.GetProperties(elementType, new Attribute[] { new SvgAttributeAttribute(attributeName) });
                     _propertyDescriptors.Add(elementType, new Dictionary<string, PropertyDescriptorCollection>());
 
                     _propertyDescriptors[elementType].Add(attributeName, properties);
@@ -266,18 +261,19 @@ namespace Svg
 
                 try
                 {
-					if (attributeName == "opacity" && attributeValue == "undefined")
+                    if (attributeName == "opacity" && attributeValue == "undefined")
 					{
 						attributeValue = "1";
 					}
 
-					descriptor.SetValue(element, descriptor.Converter.ConvertFrom(document, CultureInfo.InvariantCulture, attributeValue));
-					
-
+                    if (descriptor.Converter != null)
+                        descriptor.SetValue(element,
+                            descriptor.Converter.ConvertFrom(document, CultureInfo.InvariantCulture, attributeValue));
                 }
                 catch
                 {
-                    Trace.TraceWarning(string.Format("Attribute '{0}' cannot be set - type '{1}' cannot convert from string '{2}'.", attributeName, descriptor.PropertyType.FullName, attributeValue));
+                    Trace.TraceWarning(
+                        $"Attribute '{attributeName}' cannot be set - type '{descriptor.PropertyType.FullName}' cannot convert from string '{attributeValue}'.");
                 }
             }
             else
@@ -328,8 +324,8 @@ namespace Svg
             /// <param name="elementType">Type of the element.</param>
             public ElementInfo(string elementName, Type elementType)
             {
-                this.ElementName = elementName;
-                this.ElementType = elementType;
+                ElementName = elementName;
+                ElementType = elementType;
             }
 
             /// <summary>

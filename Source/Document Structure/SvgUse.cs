@@ -134,12 +134,12 @@ namespace Svg.Document_Structure
                 if (element != null)
                 {
                     var origParent = element.Parent;
-                    element._parent = this;
+                    element.SvgParent = this;
                     // as the new parent may have other styles that are inherited,
                     // we have to redraw the paths for the children
                     element.InvalidateChildPaths();
                     element.RenderElement(renderer);
-                    element._parent = origParent;
+                    element.SvgParent = origParent;
                 }
 
                 this.ResetClip(renderer);

@@ -26,9 +26,11 @@ namespace Svg
             return new RectangleF(r.X, r.Y, r.Width, r.Height);
         }
 
-        public static string GetXML(this SvgDocument doc)
+   
+        // ReSharper disable once UnusedMember.Global
+        public static string GetXml(this SvgDocument doc)
         {
-            var ret = "";
+            string ret;
 
             using (var ms = new MemoryStream())
             {
@@ -42,7 +44,8 @@ namespace Svg
             return ret;
         }
 
-        public static string GetXML(this SvgElement elem)
+        // ReSharper disable once UnusedMember.Global
+        public static string GetXml(this SvgElement elem)
         {
             string result;
 
@@ -50,9 +53,9 @@ namespace Svg
             try
             {
                 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-                using (StringWriter str = new StringWriter())
+                using (var str = new StringWriter())
                 {
-                    using (XmlTextWriter xml = new XmlTextWriter(str))
+                    using (var xml = new XmlTextWriter(str))
                     {
                         elem.Write(xml);
                         result = str.ToString();

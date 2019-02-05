@@ -8,10 +8,10 @@ namespace Svg.Text
 {
     public class SvgFontDefn : IFontDefn
     {
-        private SvgFont _font;
-        private float _emScale;
-        private float _ppi;
-        private float _size;
+        private readonly SvgFont _font;
+        private readonly float _emScale;
+        private readonly float _ppi;
+        private readonly float _size;
         private Dictionary<string, SvgGlyph> _glyphs;
         private Dictionary<string, SvgKern> _kerning;
 
@@ -37,21 +37,23 @@ namespace Svg.Text
         public float Ascent(ISvgRenderer renderer)
         {
             float ascent = _font.Descendants().OfType<SvgFontFace>().First().Ascent;
-            float baselineOffset = this.SizeInPoints * (_emScale / _size) * ascent;
+            float baselineOffset = SizeInPoints * (_emScale / _size) * ascent;
             return SvgDocument.PointsPerInch / 72f * baselineOffset;
         }
 
-        public IList<System.Drawing.RectangleF> MeasureCharacters(ISvgRenderer renderer, string text)
+        public IList<RectangleF> MeasureCharacters(ISvgRenderer renderer, string text)
         {
             var result = new List<RectangleF>();
-            using (var path = GetPath(renderer, text, result, false)) { }
+            using (GetPath(renderer, text, result, false))
+            { }
             return result;
         }
 
-        public System.Drawing.SizeF MeasureString(ISvgRenderer renderer, string text)
+        public SizeF MeasureString(ISvgRenderer renderer, string text)
         {
             var result = new List<RectangleF>();
-            using (var path = GetPath(renderer, text, result, true)) { }
+            using (GetPath(renderer, text, result, true))
+            { }
             var nonEmpty = result.Where(r => r != RectangleF.Empty);
             if (!nonEmpty.Any()) return SizeF.Empty;
             return new SizeF(nonEmpty.Last().Right - nonEmpty.First().Left, Ascent(renderer));

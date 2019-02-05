@@ -7,12 +7,13 @@ using Svg.Text;
 
 namespace Svg
 {
+    /// <inheritdoc />
     /// <summary>
     /// A collection of Scalable Vector Attributes that can be inherited from the owner elements ancestors.
     /// </summary>
     public sealed class SvgAttributeCollection : Dictionary<string, object>
     {
-        private SvgElement _owner;
+        private readonly SvgElement _owner;
 
         /// <inheritdoc />
         /// <summary>

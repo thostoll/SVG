@@ -25,7 +25,7 @@ namespace Svg.Text
         /// </summary>
         public virtual string Text
         {
-            get { return base.Content; }
+            get => base.Content;
             set {
                 Nodes.Clear();
                 Children.Clear();
@@ -40,7 +40,7 @@ namespace Svg.Text
 
         public override XmlSpaceHandling SpaceHandling
         {
-            get { return base.SpaceHandling; }
+            get => base.SpaceHandling;
             set { base.SpaceHandling = value; IsPathDirty = true; }
         }
 
@@ -51,15 +51,13 @@ namespace Svg.Text
         [SvgAttribute("x")]
         public virtual SvgUnitCollection X
         {
-            get { return _x; }
+            get => _x;
             set
             {
-                if (_x != value)
-                {
-                    _x = value;
-                    IsPathDirty = true;
-                    OnAttributeChanged(new AttributeEventArgs { Attribute = "x", Value = value });
-                }
+                if (_x == value) return;
+                _x = value;
+                IsPathDirty = true;
+                OnAttributeChanged(new AttributeEventArgs { Attribute = "x", Value = value });
             }
         }
 
@@ -70,15 +68,13 @@ namespace Svg.Text
         [SvgAttribute("dx")]
         public virtual SvgUnitCollection Dx
         {
-            get { return _dx; }
+            get => _dx;
             set
             {
-                if (_dx != value)
-                {
-                    _dx = value;
-                    IsPathDirty = true;
-                    OnAttributeChanged(new AttributeEventArgs { Attribute = "dx", Value = value });
-                }
+                if (_dx == value) return;
+                _dx = value;
+                IsPathDirty = true;
+                OnAttributeChanged(new AttributeEventArgs { Attribute = "dx", Value = value });
             }
         }
 
@@ -89,15 +85,13 @@ namespace Svg.Text
         [SvgAttribute("y")]
         public virtual SvgUnitCollection Y
         {
-            get { return _y; }
+            get => _y;
             set
             {
-                if (_y != value)
-                {
-                    _y = value;
-                    IsPathDirty = true;
-                    OnAttributeChanged(new AttributeEventArgs { Attribute = "y", Value = value });
-                }
+                if (_y == value) return;
+                _y = value;
+                IsPathDirty = true;
+                OnAttributeChanged(new AttributeEventArgs { Attribute = "y", Value = value });
             }
         }
 
@@ -108,15 +102,13 @@ namespace Svg.Text
         [SvgAttribute("dy")]
         public virtual SvgUnitCollection Dy
         {
-            get { return _dy; }
+            get => _dy;
             set
             {
-                if (_dy != value)
-                {
-                    _dy = value;
-                    IsPathDirty = true;
-                    OnAttributeChanged(new AttributeEventArgs { Attribute = "dy", Value = value });
-                }
+                if (_dy == value) return;
+                _dy = value;
+                IsPathDirty = true;
+                OnAttributeChanged(new AttributeEventArgs { Attribute = "dy", Value = value });
             }
         }
 
@@ -127,17 +119,15 @@ namespace Svg.Text
         [SvgAttribute("rotate")]
         public virtual string Rotate
         {
-            get { return _rotate; }
+            get => _rotate;
             set
             {
-                if (_rotate != value)
-                {
-                    _rotate = value;
-                    _rotations.Clear();
-                    _rotations.AddRange(from r in _rotate.Split(new char[] { ',', ' ', '\r', '\n', '\t' }, StringSplitOptions.RemoveEmptyEntries) select float.Parse(r));
-                    IsPathDirty = true;
-                    OnAttributeChanged(new AttributeEventArgs { Attribute = "rotate", Value = value });
-                }
+                if (_rotate == value) return;
+                _rotate = value;
+                _rotations.Clear();
+                _rotations.AddRange(from r in _rotate.Split(new[] { ',', ' ', '\r', '\n', '\t' }, StringSplitOptions.RemoveEmptyEntries) select float.Parse(r));
+                IsPathDirty = true;
+                OnAttributeChanged(new AttributeEventArgs { Attribute = "rotate", Value = value });
             }
         }
 
@@ -147,7 +137,7 @@ namespace Svg.Text
         [SvgAttribute("textLength", true)]
         public virtual SvgUnit TextLength
         {
-            get { return (Attributes["textLength"] == null ? SvgUnit.None : (SvgUnit)Attributes["textLength"]); }
+            get => (SvgUnit?) Attributes["textLength"] ?? SvgUnit.None;
             set { Attributes["textLength"] = value; IsPathDirty = true; }
         }
 
@@ -158,7 +148,7 @@ namespace Svg.Text
         [SvgAttribute("lengthAdjust", true)]
         public virtual SvgTextLengthAdjust LengthAdjust
         {
-            get { return (Attributes["lengthAdjust"] == null) ? SvgTextLengthAdjust.Spacing : (SvgTextLengthAdjust)Attributes["lengthAdjust"]; }
+            get => (SvgTextLengthAdjust?) Attributes["lengthAdjust"] ?? SvgTextLengthAdjust.Spacing;
             set { Attributes["lengthAdjust"] = value; IsPathDirty = true; }
         }
 
@@ -168,7 +158,7 @@ namespace Svg.Text
         [SvgAttribute("letter-spacing", true)]
         public virtual SvgUnit LetterSpacing
         {
-            get { return (Attributes["letter-spacing"] == null ? SvgUnit.None : (SvgUnit)Attributes["letter-spacing"]); }
+            get => (Attributes["letter-spacing"] == null ? SvgUnit.None : (SvgUnit)Attributes["letter-spacing"]);
             set { Attributes["letter-spacing"] = value; IsPathDirty = true; }
         }
 
@@ -178,7 +168,7 @@ namespace Svg.Text
         [SvgAttribute("word-spacing", true)]
         public virtual SvgUnit WordSpacing
         {
-            get { return (Attributes["word-spacing"] == null ? SvgUnit.None : (SvgUnit)Attributes["word-spacing"]); }
+            get => (Attributes["word-spacing"] == null ? SvgUnit.None : (SvgUnit)Attributes["word-spacing"]);
             set { Attributes["word-spacing"] = value; IsPathDirty = true; }
         }
 
@@ -191,8 +181,8 @@ namespace Svg.Text
         /// <value>The fill.</value>
         public override SvgPaintServer Fill
         {
-            get { return (Attributes["fill"] == null) ? new SvgColourServer(System.Drawing.Color.Black) : (SvgPaintServer)Attributes["fill"]; }
-            set { Attributes["fill"] = value; }
+            get => (Attributes["fill"] == null) ? new SvgColourServer(System.Drawing.Color.Black) : (SvgPaintServer)Attributes["fill"];
+            set => Attributes["fill"] = value;
         }
 
         /// <summary>
@@ -356,8 +346,11 @@ namespace Svg.Text
                         {
                             if (X.Count < 2)
                             {
-                                origState.LetterSpacingAdjust = -1 * diff / (state.NumChars - origState.NumChars - 1);
+                                if (origState == null) return;
+                                origState.LetterSpacingAdjust =
+                                    -1 * diff / (state.NumChars - origState.NumChars - 1);
                                 SetPath(origState, false);
+
                                 return;
                             }
                         }
@@ -436,18 +429,15 @@ namespace Svg.Text
         public event EventHandler<StringArg> Change;
 
         //change
-        protected void OnChange(string newString, string sessionID)
+        protected void OnChange(string newString, string sessionId)
         {
-            RaiseChange(this, new StringArg { S = newString, SessionId = sessionID });
+            RaiseChange(this, new StringArg { S = newString, SessionId = sessionId });
         }
 
         protected void RaiseChange(object sender, StringArg s)
         {
             var handler = Change;
-            if (handler != null)
-            {
-                handler(sender, s);
-            }
+            handler?.Invoke(sender, s);
         }
 
 
@@ -493,6 +483,8 @@ namespace Svg.Text
             private IFontDefn _font;
             private float _width = 1;
 
+            // ReSharper disable once UnusedMember.Global
+            // ReSharper disable once UnusedMember.Local
             public FontBoundable(IFontDefn font)
             {
                 _font = font;
@@ -503,37 +495,28 @@ namespace Svg.Text
                 _width = width;
             }
 
-            public PointF Location
-            {
-                get { return PointF.Empty; }
-            }
+            public PointF Location => PointF.Empty;
 
-            public SizeF Size
-            {
-                get { return new SizeF(_width, _font.Size); }
-            }
+            public SizeF Size => new SizeF(_width, _font.Size);
 
-            public RectangleF Bounds
-            {
-                get { return new RectangleF(Location, Size); }
-            }
+            public RectangleF Bounds => new RectangleF(Location, Size);
         }
 
         private class TextDrawingState
         {
             private float _xAnchor = float.MinValue;
             private IList<GraphicsPath> _anchoredPaths = new List<GraphicsPath>();
-            private GraphicsPath _currPath = null;
-            private GraphicsPath _finalPath = null;
-            private float _authorPathLength = 0;
+            private GraphicsPath _currPath;
+            private GraphicsPath _finalPath;
+            private readonly float _authorPathLength;
 
             public GraphicsPath BaselinePath { get; set; }
             public PointF Current { get; set; }
             public RectangleF TextBounds { get; set; }
-            public SvgTextBase Element { get; set; }
+            private SvgTextBase Element { get; set; }
             public float LetterSpacingAdjust { get; set; }
             public int NumChars { get; set; }
-            public TextDrawingState Parent { get; set; }
+            private TextDrawingState Parent { get; set; }
             public ISvgRenderer Renderer { get; set; }
             public float StartOffsetAdjust { get; set; }
 
@@ -685,7 +668,7 @@ namespace Svg.Text
                     // NOTE: Assuming a horizontal left-to-right font
                     // Render absolutely positioned items in the horizontal direction
                     var yPos = Current.Y;
-                    for (int i = 0; i < xAnchors.Count - 1; i++)
+                    for (var i = 0; i < xAnchors.Count - 1; i++)
                     {
                         FlushPath();
                         _xAnchor = xAnchors[i] + (xOffsets.Count > i ? xOffsets[i] : 0);

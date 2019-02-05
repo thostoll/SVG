@@ -23,7 +23,7 @@ namespace Svg.Text
         [SvgAttribute("startOffset")]
         public virtual SvgUnit StartOffset
         {
-            get { return (_dx.Count < 1 ? SvgUnit.None : _dx[0]); }
+            get => (_dx.Count < 1 ? SvgUnit.None : _dx[0]);
             set 
             {
                 if (_dx.Count < 1)
@@ -40,27 +40,27 @@ namespace Svg.Text
         [SvgAttribute("method")]
         public virtual SvgTextPathMethod Method
         {
-            get { return (this.Attributes["method"] == null ? SvgTextPathMethod.Align : (SvgTextPathMethod)this.Attributes["method"]); }
-            set { this.Attributes["method"] = value; }
+            get { return (Attributes["method"] == null ? SvgTextPathMethod.Align : (SvgTextPathMethod)Attributes["method"]); }
+            set { Attributes["method"] = value; }
         }
 
         [SvgAttribute("spacing")]
         public virtual SvgTextPathSpacing Spacing
         {
-            get { return (this.Attributes["spacing"] == null ? SvgTextPathSpacing.Exact : (SvgTextPathSpacing)this.Attributes["spacing"]); }
-            set { this.Attributes["spacing"] = value; }
+            get { return (Attributes["spacing"] == null ? SvgTextPathSpacing.Exact : (SvgTextPathSpacing)Attributes["spacing"]); }
+            set { Attributes["spacing"] = value; }
         }
 
         [SvgAttribute("href", SvgAttributeAttribute.XLinkNamespace)]
         public virtual Uri ReferencedPath
         {
-            get { return this._referencedPath; }
-            set { this._referencedPath = value; }
+            get { return _referencedPath; }
+            set { _referencedPath = value; }
         }
 
         protected override GraphicsPath GetBaselinePath(ISvgRenderer renderer)
         {
-            var path = this.OwnerDocument.IdManager.GetElementById(this.ReferencedPath) as Basic_Shapes.SvgVisualElement;
+            var path = OwnerDocument.IdManager.GetElementById(ReferencedPath) as Basic_Shapes.SvgVisualElement;
             if (path == null) return null;
             var pathData = (GraphicsPath)path.Path(renderer).Clone();
             if (path.Transforms.Count > 0)
@@ -78,7 +78,7 @@ namespace Svg.Text
         }
         protected override float GetAuthorPathLength()
         {
-            var path = this.OwnerDocument.IdManager.GetElementById(this.ReferencedPath) as SvgPath;
+            var path = OwnerDocument.IdManager.GetElementById(ReferencedPath) as SvgPath;
             if (path == null) return 0;
             return path.PathLength;
         }

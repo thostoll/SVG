@@ -167,6 +167,7 @@ namespace Svg.Text
             public ushort UStringOffset;
         }
 
+        // ReSharper disable once UnusedMember.Local
         private static ushort ReadChar(Stream fs, int characters)
         {
             var s = new string[characters];
@@ -176,6 +177,7 @@ namespace Svg.Text
             return BitConverter.ToUInt16(buf, 0);
         }
 
+        // ReSharper disable once UnusedMember.Local
         private static ushort ReadByte(Stream fs)
         {
             var buf = new byte[11];

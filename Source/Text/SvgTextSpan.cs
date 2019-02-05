@@ -10,14 +10,15 @@
 
         public override SvgElement DeepCopy<T>()
         {
-            var newObj = base.DeepCopy<T>() as SvgTextSpan;
-            newObj.X = this.X;
-            newObj.Y = this.Y;
-            newObj.Dx = this.Dx;
-            newObj.Dy = this.Dy;
-            newObj.Text = this.Text;
+            if (!(base.DeepCopy<T>() is SvgTextSpan newObj)) return null;
+            newObj.X = X;
+            newObj.Y = Y;
+            newObj.Dx = Dx;
+            newObj.Dy = Dy;
+            newObj.Text = Text;
 
             return newObj;
+
         }
 
 

@@ -30,21 +30,18 @@
 
         public override SvgElement DeepCopy<T>()
         {
-            if (base.DeepCopy<T>() is SvgText newObj)
-            {
-                newObj.TextAnchor = TextAnchor;
-                newObj.WordSpacing = WordSpacing;
-                newObj.LetterSpacing = LetterSpacing;
-                newObj.Font = Font;
-                newObj.FontFamily = FontFamily;
-                newObj.FontSize = FontSize;
-                newObj.FontWeight = FontWeight;
-                newObj.X = X;
-                newObj.Y = Y;
-                return newObj;
-            }
+            if (!(base.DeepCopy<T>() is SvgText newObj)) return null;
+            newObj.TextAnchor = TextAnchor;
+            newObj.WordSpacing = WordSpacing;
+            newObj.LetterSpacing = LetterSpacing;
+            newObj.Font = Font;
+            newObj.FontFamily = FontFamily;
+            newObj.FontSize = FontSize;
+            newObj.FontWeight = FontWeight;
+            newObj.X = X;
+            newObj.Y = Y;
+            return newObj;
 
-            return null;
         }
     }
 }

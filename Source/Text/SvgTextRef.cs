@@ -12,14 +12,14 @@ namespace Svg.Text
         [SvgAttribute("href", SvgAttributeAttribute.XLinkNamespace)]
         public virtual Uri ReferencedElement
         {
-            get { return this._referencedElement; }
-            set { this._referencedElement = value; }
+            get => _referencedElement;
+            set => _referencedElement = value;
         }
 
         internal override IEnumerable<ISvgNode> GetContentNodes()
         {
-            var refText = this.OwnerDocument.IdManager.GetElementById(this.ReferencedElement) as SvgTextBase;
-            IEnumerable<ISvgNode> contentNodes = null;
+            var refText = OwnerDocument.IdManager.GetElementById(ReferencedElement) as SvgTextBase;
+            IEnumerable<ISvgNode> contentNodes;
 
             if (refText == null)
             {
@@ -42,15 +42,16 @@ namespace Svg.Text
 
         public override SvgElement DeepCopy<T>()
         {
-            var newObj = base.DeepCopy<T>() as SvgTextRef;
-            newObj.X = this.X;
-            newObj.Y = this.Y;
-            newObj.Dx = this.Dx;
-            newObj.Dy = this.Dy;
-            newObj.Text = this.Text;
-            newObj.ReferencedElement = this.ReferencedElement;
+            if (!(base.DeepCopy<T>() is SvgTextRef newObj)) return null;
+            newObj.X = X;
+            newObj.Y = Y;
+            newObj.Dx = Dx;
+            newObj.Dy = Dy;
+            newObj.Text = Text;
+            newObj.ReferencedElement = ReferencedElement;
 
             return newObj;
+
         }
 
 

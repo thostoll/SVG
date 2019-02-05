@@ -7,43 +7,41 @@ namespace Svg.Text
 {
     public class PathStatistics
     {
-        private const double GqBreak_TwoPoint = 0.57735026918962573;
-        private const double GqBreak_ThreePoint = 0.7745966692414834;
-        private const double GqBreak_FourPoint_01 = 0.33998104358485631;
-        private const double GqBreak_FourPoint_02 = 0.86113631159405257;
-        private const double GqWeight_FourPoint_01 = 0.65214515486254621;
-        private const double GqWeight_FourPoint_02 = 0.34785484513745385;
+        private const double GqBreakTwoPoint = 0.57735026918962573;
+        private const double GqBreakThreePoint = 0.7745966692414834;
+        private const double GqBreakFourPoint01 = 0.33998104358485631;
+        private const double GqBreakFourPoint02 = 0.86113631159405257;
+        private const double GqWeightFourPoint01 = 0.65214515486254621;
+        private const double GqWeightFourPoint02 = 0.34785484513745385;
 
-        private PathData _data;
-        private double _totalLength;
-        private List<ISegment> _segments = new List<ISegment>();
+        private readonly List<ISegment> _segments = new List<ISegment>();
 
-        public double TotalLength { get { return _totalLength; } }
+        public double TotalLength { get; }
 
         public PathStatistics(PathData data)
         {
-            _data = data;
-            int i = 1;
-            _totalLength = 0;
-            ISegment newSegment;
-            while (i < _data.Points.Length)
+            var data1 = data;
+            var i = 1;
+            TotalLength = 0;
+            while (i < data1.Points.Length)
             {
-                switch (_data.Types[i])
+                ISegment newSegment;
+                switch (data1.Types[i])
                 {
                     case 1:
-                        newSegment = new LineSegment(_data.Points[i - 1], _data.Points[i]);
+                        newSegment = new LineSegment(data1.Points[i - 1], data1.Points[i]);
                         i++;
                         break;
                     case 3:
-                        newSegment = new CubicBezierSegment(_data.Points[i - 1], _data.Points[i], _data.Points[i + 1], _data.Points[i + 2]);
+                        newSegment = new CubicBezierSegment(data1.Points[i - 1], data1.Points[i], data1.Points[i + 1], data1.Points[i + 2]);
                         i+= 3;
                         break;
                     default:
                         throw new NotSupportedException();
                 }
-                newSegment.StartOffset = _totalLength;
+                newSegment.StartOffset = TotalLength;
                 _segments.Add(newSegment);
-                _totalLength += newSegment.Length;
+                TotalLength += newSegment.Length;
             }
         }
 
@@ -218,17 +216,17 @@ namespace Svg.Text
                     case 1:
                         return (b - a) * func.Invoke((a + b) / 2.0);
                     case 2:
-                        return (b - a) / 2.0 * (func.Invoke((b - a) / 2.0 * -1 * GqBreak_TwoPoint + (a + b) / 2.0) + 
-                                                func.Invoke((b - a) / 2.0 * GqBreak_TwoPoint + (a + b) / 2.0));
+                        return (b - a) / 2.0 * (func.Invoke((b - a) / 2.0 * -1 * GqBreakTwoPoint + (a + b) / 2.0) + 
+                                                func.Invoke((b - a) / 2.0 * GqBreakTwoPoint + (a + b) / 2.0));
                     case 3:
-                        return (b - a) / 2.0 * (5.0 / 9 * func.Invoke((b - a) / 2.0 * -1 * GqBreak_ThreePoint + (a + b) / 2.0) +
+                        return (b - a) / 2.0 * (5.0 / 9 * func.Invoke((b - a) / 2.0 * -1 * GqBreakThreePoint + (a + b) / 2.0) +
                                                 8.0 / 9 * func.Invoke((a + b) / 2.0) +
-                                                5.0 / 9 * func.Invoke((b - a) / 2.0 * GqBreak_ThreePoint + (a + b) / 2.0));
+                                                5.0 / 9 * func.Invoke((b - a) / 2.0 * GqBreakThreePoint + (a + b) / 2.0));
                     case 4:
-                        return (b - a) / 2.0 * (GqWeight_FourPoint_01 * func.Invoke((b - a) / 2.0 * -1 * GqBreak_FourPoint_01 + (a + b) / 2.0) +
-                                                GqWeight_FourPoint_01 * func.Invoke((b - a) / 2.0 * GqBreak_FourPoint_01 + (a + b) / 2.0) +
-                                                GqWeight_FourPoint_02 * func.Invoke((b - a) / 2.0 * -1 * GqBreak_FourPoint_02 + (a + b) / 2.0) +
-                                                GqWeight_FourPoint_02 * func.Invoke((b - a) / 2.0 * GqBreak_FourPoint_02 + (a + b) / 2.0));
+                        return (b - a) / 2.0 * (GqWeightFourPoint01 * func.Invoke((b - a) / 2.0 * -1 * GqBreakFourPoint01 + (a + b) / 2.0) +
+                                                GqWeightFourPoint01 * func.Invoke((b - a) / 2.0 * GqBreakFourPoint01 + (a + b) / 2.0) +
+                                                GqWeightFourPoint02 * func.Invoke((b - a) / 2.0 * -1 * GqBreakFourPoint02 + (a + b) / 2.0) +
+                                                GqWeightFourPoint02 * func.Invoke((b - a) / 2.0 * GqBreakFourPoint02 + (a + b) / 2.0));
                 }
                 throw new NotSupportedException();
             }
