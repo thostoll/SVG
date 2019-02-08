@@ -7,14 +7,8 @@ namespace Svg.Text
     [SvgElement("tref")]
     public class SvgTextRef : SvgTextBase
     {
-        private Uri _referencedElement;
-
         [SvgAttribute("href", SvgAttributeAttribute.XLinkNamespace)]
-        public virtual Uri ReferencedElement
-        {
-            get => _referencedElement;
-            set => _referencedElement = value;
-        }
+        public virtual Uri ReferencedElement { get; set; }
 
         internal override IEnumerable<ISvgNode> GetContentNodes()
         {

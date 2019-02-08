@@ -82,10 +82,10 @@ namespace Svg.DataTypes
         /// <param name="height">The height.</param>
         public SvgViewBox(float minX, float minY, float width, float height) : this()
         {
-            this.MinX = minX;
-            this.MinY = minY;
-            this.Width = width;
-            this.Height = height;
+            MinX = minX;
+            MinY = minY;
+            Width = width;
+            Height = height;
         }
         
         #region Equals and GetHashCode implementation
@@ -96,15 +96,15 @@ namespace Svg.DataTypes
         
 		public bool Equals(SvgViewBox other)
 		{
-			return this.MinX == other.MinX 
-				&& this.MinY == other.MinY 
-				&& this.Width == other.Width 
-				&& this.Height == other.Height;
+			return MinX == other.MinX 
+				&& MinY == other.MinY 
+				&& Width == other.Width 
+				&& Height == other.Height;
 		}
         
 		public override int GetHashCode()
 		{
-			int hashCode = 0;
+			var hashCode = 0;
 			unchecked {
 				hashCode += 1000000007 * MinX.GetHashCode();
 				hashCode += 1000000009 * MinY.GetHashCode();
@@ -127,22 +127,22 @@ namespace Svg.DataTypes
 
         public void AddViewBoxTransform(SvgAspectRatio aspectRatio, ISvgRenderer renderer, SvgFragment frag)
         {
-            var x = (frag == null ? 0 : frag.X.ToDeviceValue(renderer, UnitRenderingType.Horizontal, frag));
-            var y = (frag == null ? 0 : frag.Y.ToDeviceValue(renderer, UnitRenderingType.Vertical, frag));
+            var x = frag?.X.ToDeviceValue(renderer, UnitRenderingType.Horizontal, frag) ?? 0;
+            var y = frag?.Y.ToDeviceValue(renderer, UnitRenderingType.Vertical, frag) ?? 0;
 
-            if (this.Equals(SvgViewBox.Empty))
+            if (Equals(Empty))
             {
                 renderer.TranslateTransform(x, y, MatrixOrder.Prepend);
                 return;
             }
 
-            var width = (frag == null ? this.Width : frag.Width.ToDeviceValue(renderer, UnitRenderingType.Horizontal, frag));
-            var height = (frag == null ? this.Height : frag.Height.ToDeviceValue(renderer, UnitRenderingType.Vertical, frag));
+            var width = frag?.Width.ToDeviceValue(renderer, UnitRenderingType.Horizontal, frag) ?? Width;
+            var height = frag?.Height.ToDeviceValue(renderer, UnitRenderingType.Vertical, frag) ?? Height;
 
-            var fScaleX = width / this.Width;
-            var fScaleY = height / this.Height; //(this.MinY < 0 ? -1 : 1) * 
-            var fMinX = -this.MinX * fScaleX;
-            var fMinY = -this.MinY * fScaleY;
+            var fScaleX = width / Width;
+            var fScaleY = height / Height; //(this.MinY < 0 ? -1 : 1) * 
+            var fMinX = -MinX * fScaleX;
+            var fMinY = -MinY * fScaleY;
 
             if (aspectRatio == null) aspectRatio = new SvgAspectRatio(SvgPreserveAspectRatio.xMidYMid, false);
             if (aspectRatio.Align != SvgPreserveAspectRatio.none)
@@ -157,12 +157,12 @@ namespace Svg.DataTypes
                     fScaleX = Math.Min(fScaleX, fScaleY);
                     fScaleY = Math.Min(fScaleX, fScaleY);
                 }
-                float fViewMidX = (this.Width / 2) * fScaleX;
-                float fViewMidY = (this.Height / 2) * fScaleY;
-                float fMidX = width / 2;
-                float fMidY = height / 2;
-                fMinX = -this.MinX * fScaleX;
-                fMinY = -this.MinY * fScaleY;
+                var fViewMidX = (Width / 2) * fScaleX;
+                var fViewMidY = (Height / 2) * fScaleY;
+                var fMidX = width / 2;
+                var fMidY = height / 2;
+                fMinX = -MinX * fScaleX;
+                fMinY = -MinY * fScaleY;
 
                 switch (aspectRatio.Align)
                 {
@@ -172,7 +172,7 @@ namespace Svg.DataTypes
                         fMinX += fMidX - fViewMidX;
                         break;
                     case SvgPreserveAspectRatio.xMaxYMin:
-                        fMinX += width - this.Width * fScaleX;
+                        fMinX += width - Width * fScaleX;
                         break;
                     case SvgPreserveAspectRatio.xMinYMid:
                         fMinY += fMidY - fViewMidY;
@@ -182,21 +182,19 @@ namespace Svg.DataTypes
                         fMinY += fMidY - fViewMidY;
                         break;
                     case SvgPreserveAspectRatio.xMaxYMid:
-                        fMinX += width - this.Width * fScaleX;
+                        fMinX += width - Width * fScaleX;
                         fMinY += fMidY - fViewMidY;
                         break;
                     case SvgPreserveAspectRatio.xMinYMax:
-                        fMinY += height - this.Height * fScaleY;
+                        fMinY += height - Height * fScaleY;
                         break;
                     case SvgPreserveAspectRatio.xMidYMax:
                         fMinX += fMidX - fViewMidX;
-                        fMinY += height - this.Height * fScaleY;
+                        fMinY += height - Height * fScaleY;
                         break;
                     case SvgPreserveAspectRatio.xMaxYMax:
-                        fMinX += width - this.Width * fScaleX;
-                        fMinY += height - this.Height * fScaleY;
-                        break;
-                    default:
+                        fMinX += width - Width * fScaleX;
+                        fMinY += height - Height * fScaleY;
                         break;
                 }
             }
@@ -219,58 +217,42 @@ namespace Svg.DataTypes
         /// An <see cref="T:System.Object"/> that represents the converted value.
         /// </returns>
         /// <exception cref="T:System.NotSupportedException">The conversion cannot be performed. </exception>
-        public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
-            if (value is string)
+            if (!(value is string)) return base.ConvertFrom(context, culture, value);
+            var coords = ((string)value).Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (coords.Length != 4)
             {
-                string[] coords = ((string)value).Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-                if (coords.Length != 4)
-                {
-                    throw new SvgException("The 'viewBox' attribute must be in the format 'minX, minY, width, height'.");
-                }
-
-                return new SvgViewBox(float.Parse(coords[0], NumberStyles.Float, CultureInfo.InvariantCulture),
-                    float.Parse(coords[1], NumberStyles.Float, CultureInfo.InvariantCulture),
-                    float.Parse(coords[2], NumberStyles.Float, CultureInfo.InvariantCulture),
-                    float.Parse(coords[3], NumberStyles.Float, CultureInfo.InvariantCulture));
+                throw new SvgException("The 'viewBox' attribute must be in the format 'minX, minY, width, height'.");
             }
 
-            return base.ConvertFrom(context, culture, value);
+            return new SvgViewBox(float.Parse(coords[0], NumberStyles.Float, CultureInfo.InvariantCulture),
+                float.Parse(coords[1], NumberStyles.Float, CultureInfo.InvariantCulture),
+                float.Parse(coords[2], NumberStyles.Float, CultureInfo.InvariantCulture),
+                float.Parse(coords[3], NumberStyles.Float, CultureInfo.InvariantCulture));
+
         }
 
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {
-            if (sourceType == typeof(string))
-            {
-                return true;
-            }
-
-            return base.CanConvertFrom(context, sourceType);
+            return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
         }
 
         public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
         {
-            if (destinationType == typeof(string))
-            {
-                return true;
-            }
-
-            return base.CanConvertTo(context, destinationType);
+            return destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
         }
 
         public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
         {
-            if (destinationType == typeof(string))
-            {
-                var viewBox = (SvgViewBox)value;
+            if (destinationType != typeof(string)) return base.ConvertTo(context, culture, value, destinationType);
+            var viewBox = (SvgViewBox)value;
 
-                return string.Format("{0}, {1}, {2}, {3}",
-                    viewBox.MinX.ToString(CultureInfo.InvariantCulture), viewBox.MinY.ToString(CultureInfo.InvariantCulture),
-                    viewBox.Width.ToString(CultureInfo.InvariantCulture), viewBox.Height.ToString(CultureInfo.InvariantCulture));
-            }
+            return
+                $"{viewBox.MinX.ToString(CultureInfo.InvariantCulture)}, {viewBox.MinY.ToString(CultureInfo.InvariantCulture)}, " +
+                $"{viewBox.Width.ToString(CultureInfo.InvariantCulture)}, {viewBox.Height.ToString(CultureInfo.InvariantCulture)}";
 
-            return base.ConvertTo(context, culture, value, destinationType);
         }
     }
 }
